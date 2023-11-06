@@ -1,7 +1,7 @@
-var Engine = {
+var Satellite1 = {
     check: function(){
-    console.log("Engine Ready !")
+    console.log("Satellite1 Ready !")
     return true
     }
     }
-    module.exports = Engine
+    module.exports = Satellite1

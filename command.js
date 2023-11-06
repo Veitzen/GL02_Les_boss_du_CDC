@@ -1,8 +1,8 @@
-var Engine = {
+var command = {
     check: function(){
-    console.log("Engine Ready !")
+    console.log("Command Ready !")
     return true
     }
     }
-    module.exports = Engine
+    module.exports = command
     

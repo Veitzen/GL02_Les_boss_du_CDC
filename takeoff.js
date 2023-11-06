@@ -1,4 +1,4 @@
-var colors = require("colors");
+// var colors = require("colors");
 var unsafeRequire = require("./utils/unsafeRequire");
 
 // Pour rendre node un peu plus souple pour l'exercice (ne jamais utiliser ailleurs)
@@ -47,7 +47,7 @@ var checklist = {
 };
 
 var takeOff = function(){
-	var counter = 5;
+	var counter = 4;
 	for(var part in rocket){
 		console.log(counter + "..");
 		checklist[part] = rocket[part].check();
@@ -67,7 +67,7 @@ var takeOff = function(){
 	
 	// Décollage
 	if(counter === 0){
-		console.log("0.. Fire \nTaaaaakkke Oooooofffff".green);
+		console.log("0.. Fire \nTaaaaakkke Oooooofffff");
 	}
 }
 
