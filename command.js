@@ -1,6 +1,6 @@
 var Engine = {
     check: function(){
-    console.log("Engine Ready and Clemence is gay !")
+    console.log("Engine Ready !")
     return true
     }
     }
