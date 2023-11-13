@@ -67,7 +67,7 @@ var takeOff = function(){
 	
 	// Décollage
 	if(counter === 0){
-		console.log("0.. Fire \nTaaaaakkke Oooooofffff");
+		console.log("0.. Fire \nTaaaaakkke Oooooofffff".red);
 	}
 }
 
