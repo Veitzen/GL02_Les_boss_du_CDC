@@ -91,20 +91,30 @@ class Parser {
                 let question = {
                     title: this.title(tData[i]),
                     format: this.format(tData[i]),
-                    text: this.text(tData[i]) + this.text(tData[i+1]), // On ajoute le texte de la question suivante si elle existe
-                    answers: this.answer(tData[i+1])
                 };
+                this.comments = [];
+                let regexPattern = /{.*?}/g;
+                if(this.answer(tData[i]) === undefined){
+                    question.text = this.text(tData[i]);
+                    this.errMsg("No answer for a question.", tData[i]);
+                } else {
+                    if(regexPattern.exec(tData[i]) !== null){
+                        question.answers = this.answer(tData[i]);
+                        question.text = this.text(tData[i]);
+                    } else {
+                        question.answers = this.answer(tData[i+1]);
+                        question.text = this.text(tData[i]) + this.text(tData[i+1]);
+                        i++
+                    }
+                }
                 this.parsedQuestions.push(question);
-                i++;
             }
         }
     }
 
     // Comment : "//" *(VCHAR / WSP) \n ; donc à chaque ligne = 1er commentaire s'il commence par //
     comment(line){
-        if(line.startsWith("//")){
-            this.comments.push(line.replace("// ", ""));
-        }
+        this.comments.push(line.replace("// ", ""));
     }
 
     // Title : "::" *(VCHAR / WSP) "::" \n ; pareil ici, on prend une ligne et on vérifie si elle commence par ::
@@ -145,14 +155,17 @@ class Parser {
 
     // Text : *(VCHAR / WSP) \n ; ce qui est en dehors des crochets
     text(line){
-        line = line.replace("::"+this.title(line)+"::", "");
-        line = line.replace(".", ".\n")
-        let answers = this.answer(line);
         let text = line;
-        answers.map(answer => {
-            text = text.replace(answer, "<Answer>");
-        });
-        return text;
+        text = line.replace("::"+this.title(line)+"::", "");
+        let answers = this.answer(line);
+        if(answers == undefined){
+            return text;
+        } else {
+            answers.map(answer => {
+                text = text.replace(answer, "<Answer>");
+            });
+            return text;
+        }
     }
 
     // Answer : {*(VCHAR / WSP)} \n ; ce qui est entre les crochets
@@ -163,7 +176,9 @@ class Parser {
         while ((answer = regexPattern.exec(line)) !== null) {
             answerArray.push(answer[0]);
         }
-        return answerArray;
+        if (answerArray.length !== 0) {
+            return answerArray;
+        }
     }
 
     // Error message
