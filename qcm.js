@@ -2,33 +2,39 @@
 
 // Définir la classe Question à partir de "Sémantique des données"
 class Question {
-    symb = ["//", "::", "["];
 
-    constructor(typeQuestion, question) {
-        this.typeQuestion = typeQuestion;
-        this.question = question;
+    constructor(title, format, text, answers) {
+        this.title = title;
+        this.format = format;
+        this.text = text;
+        this.answers = answers;
     }
-}
+    
+    typeofQuestion() {
+        if(this.text.endsWith("<Answer>")) {
+            if((/{(T|F|TRUE|FALSE)/g.exec(this.answers[0]) != null)) {
+                return "VraiFaux";
+            } else if((/->/g).exec(this.answers[0]) != null) {
+                return "Appariement";
+            } else if(this.answers[0].startsWith("{#")) {
+                if(this.answers[0].includes("=")) {
+                    return "ReponseNumeriqueMultiple";
+                } else {
+                    return "ReponseNumerique";
+                }
+            } else if(this.answers[0] == "{}") {
+                return "Composition";
+            } else if(this.answers[0].includes("~")){
+                return "ChoixMultiple";
+            }
+            else {
+                return "ReponseCourte";
+            }
+        } else {
+            return "MotManquant";
+        }
+    }
 
-class VraiFaux extends Question {
-    constructor(typeQuestion, question, reponse) {
-        super(typeQuestion, question);
-        this.reponse = reponse;
-    }
-}
-
-class ChoixMultiple extends Question {
-    constructor(typeQuestion, question, reponses) {
-        super(typeQuestion, question);
-        this.reponses = reponses;
-    }
-}
-
-class TexteTroue extends Question {
-    constructor(typeQuestion, question, reponse) {
-        super(typeQuestion, question);
-        this.reponse = reponse;
-    }
 }
 
 
@@ -40,3 +46,5 @@ class QCM {
         this.questions = questions;
     }
 }
+
+module.exports = {Question, QCM};

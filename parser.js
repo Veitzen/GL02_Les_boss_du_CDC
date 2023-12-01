@@ -1,3 +1,5 @@
+const { Question } = require('./qcm.js');
+
 // Définition de la classe parser à utiliser
 class Parser {
     parsedQuestions = [];
@@ -7,7 +9,14 @@ class Parser {
     tokenize(data) {
         let tData = data.replace("\t", "");
         tData = tData.split("\n");
-        tData = tData.map(line => line.trim());
+        tData = tData.map(line => {
+            line = line.trim();
+            if((/\s+/g).exec(line) !== null){
+                line = line.replace(/\s+/g, " ");
+            }
+            return line;
+        }
+        );
         // On réécrit les lignes pour mieux les parser
         let temp = [];
         for(let i=0; i<tData.length; i++){
@@ -42,12 +51,7 @@ class Parser {
                 this.comment(tData[i]);
             } else if (tData[i] === ''){
             } else{
-                let question = {
-                    title: this.title(tData[i]),
-                    format: this.format(tData[i]),
-                    text: '',
-                    answers: []
-                };
+                let question = new Question(this.title(tData[i]), this.format(tData[i]), "", []);
                 while(tData[i] != '' && i<tData.length){
                         if(this.answer(tData[i]) != undefined){
                             question.answers = question.answers.concat(this.answer(tData[i]));
@@ -59,6 +63,7 @@ class Parser {
                         }
                         i++;
                 }
+                question.typeQuestion = question.typeofQuestion();
                 this.parsedQuestions.push(question);
             }
         }
