@@ -1,1 +1,1 @@
-n
+        let tData = data.replace("\t", "");

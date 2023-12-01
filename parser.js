@@ -5,73 +5,27 @@ class Parser {
     errorCount = 0;
 
     tokenize(data) {
-        let tData = data.replaceAll(/\r/g, "\n").replaceAll(/\r\n/g, "\n");
-        tData = data.split("\n");
-        tData = tData.filter(line => line != "");
-        tData.map((line, index, elements) => {
-            elements[index] = elements[index].replace(/\s\s+/g, " ");
-            if (line.search(/{#$|{$/g)!= -1) {
-                if(elements[index].endsWith("{# ")){
-                    elements[index] = elements[index].replace("{# ", "");
-                    elements[index + 1] = "{# " + elements[index + 1];
-                } else {
-                elements[index] = elements[index].replace(" {", "");
-                elements[index + 1] = "{" + elements[index + 1];
-                }
-            }
-        });
-        // Mettre en commun les questions d'appariement et les questions à réponses multiples
+        let tData = data.replace("\t", "");
+        tData = tData.split("\n");
+        tData = tData.map(line => line.trim());
+        // On réécrit les lignes pour mieux les parser
         let temp = [];
-        for (let i = 0; i < tData.length; i++) {
-            if(tData[i].startsWith("{")){
-                let response = "";
+        for(let i=0; i<tData.length; i++){
+            if((/({$| {#$)/gm).exec(tData[i]) !== null){
+                let responseLine = tData[i];
                 let sybNotFound = true;
-                while(sybNotFound && i < tData.length-1){
-                    if(tData[i].endsWith("}")){
-                        response = response.concat(' ', tData[i]);
+                i++;
+                while(sybNotFound && i<tData.length){
+                    if(tData[i].includes("}")){
                         sybNotFound = false;
-                        temp.push(response);
+                        responseLine += " " + tData[i];
+                        temp.push(responseLine)
+                        temp.push('');
+                        i++;
                     } else {
-                        if (response === "") {
-                            response = response.concat(tData[i]);
-                        } else {
-                        response = response.concat(' ', tData[i]);
-                        }
+                        responseLine += " " + tData[i];
                         i++;
                     }
-                }
-                if (i === tData.length-1) {
-                    response = response.concat(' ', tData[i]);
-                    temp.push(response);
-                }
-            } else {
-                temp.push(tData[i]);
-            }
-        }
-        tData = temp;
-        // Mettre en commun le texte des questions de type "Texte troué"
-        temp = [];
-        for (let i = 0; i < tData.length; i++) {
-            if (!(tData[i].includes("//") || tData[i].includes("::"))) {
-                let response = "";
-                let sybNotFound = true;
-                while(sybNotFound && i < tData.length-1){
-                    if(tData[i].startsWith("//") || tData[i].startsWith("::")){
-                        sybNotFound = false;
-                        temp.push(response);
-                        temp.push(tData[i]);
-                    } else {
-                        if (response === "") {
-                            response = response.concat(tData[i]);
-                        } else {
-                        response = response.concat(' ', tData[i]);
-                        }
-                        i++;
-                    }
-                }
-                if (i === tData.length-1) {
-                    response = response.concat(' ', tData[i]);
-                    temp.push(response);
                 }
             } else {
                 temp.push(tData[i]);
@@ -86,26 +40,24 @@ class Parser {
         for(let i=0; i<tData.length; i++){
             if(tData[i].startsWith("//")){
                 this.comment(tData[i]);
-            }
-            else{
+            } else if (tData[i] === ''){
+            } else{
                 let question = {
                     title: this.title(tData[i]),
                     format: this.format(tData[i]),
+                    text: '',
+                    answers: []
                 };
-                this.comments = [];
-                let regexPattern = /{.*?}/g;
-                if(this.answer(tData[i]) === undefined){
-                    question.text = this.text(tData[i]);
-                    this.errMsg("No answer for a question.", tData[i]);
-                } else {
-                    if(regexPattern.exec(tData[i]) !== null){
-                        question.answers = this.answer(tData[i]);
-                        question.text = this.text(tData[i]);
-                    } else {
-                        question.answers = this.answer(tData[i+1]);
-                        question.text = this.text(tData[i]) + this.text(tData[i+1]);
-                        i++
-                    }
+                while(tData[i] != '' && i<tData.length){
+                        if(this.answer(tData[i]) != undefined){
+                            question.answers = question.answers.concat(this.answer(tData[i]));
+                        }
+                        if(question.text == ''){
+                            question.text = this.text(tData[i]);
+                        } else {
+                            question.text += "\n" + this.text(tData[i]);
+                        }
+                        i++;
                 }
                 this.parsedQuestions.push(question);
             }
@@ -125,15 +77,21 @@ class Parser {
                 // On récupère le titre
                 return toCheckData.split("::")[0];
             } else{
+                this.errMsg("Question must be between with ::", line);
+                }
+            } 
+            else{
                 // Tout le texte est le titre de la question
                 let answers = this.answer(line);
                 let text = line;
+                if(answers == undefined){
+                    return text;
+                } else 
                 answers.map(answer => {
-                    text = text.replace(answer, "");
+                    text = text.replace(answer, "<Answer>");
                 });
                 return text;
             }
-        }
     }
 
     // Format : [(html / markdown / plain / moodle)] ; par défaut c'est moodle
@@ -156,7 +114,9 @@ class Parser {
     // Text : *(VCHAR / WSP) \n ; ce qui est en dehors des crochets
     text(line){
         let text = line;
-        text = line.replace("::"+this.title(line)+"::", "");
+        if(line.includes("::")){
+            text = line.replace("::"+this.title(line)+"::", "");
+        }
         let answers = this.answer(line);
         if(answers == undefined){
             return text;
@@ -189,7 +149,7 @@ class Parser {
 }
 
 let fs = require('fs');
-fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
+fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
@@ -198,7 +158,7 @@ fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
     } else {
         console.log("The .gift file contains error");
     }
+    console.log(parser.tokenize(data));
     parser.parse(data);
     console.log(parser.parsedQuestions);
-    console.log(parser.tokenize(data));
 });
