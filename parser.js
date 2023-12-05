@@ -5,10 +5,17 @@ class Parser {
     parsedQuestions = [];
     comments = [];
     errorCount = 0;
+    specialSymbols = ["\\~", "\\=", "\\#", "\\{", "\\}", "####"];
 
     tokenize(data) {
-        let tData = data.replace("\t", "");
-        tData = tData.split("\n");
+        // Identification des symboles spéciaux et remplacement par SYMBOL1, SYMBOL2, etc.
+        this.specialSymbols.map((symbol,index) => {
+            data = data.replace(symbol, "SYMBOL" + (index+1));
+        });
+        // Suppression des tabulations
+        data.replace("\t", "");
+        // Séparation par ligne
+        let tData = data.split("\n");
         tData = tData.map(line => {
             line = line.trim();
             if((/\s+/g).exec(line) !== null){
@@ -44,17 +51,24 @@ class Parser {
         return tData;
     }
 
+    specialSymbolsRevert(data){
+        this.specialSymbols.map((symbol,index) => {
+            data = data.replace("SYMBOL" + (index+1), symbol);
+        });
+        return data;
+    }
+
     parse(data) {
         let tData = this.tokenize(data);
         for(let i=0; i<tData.length; i++){
             if(tData[i].startsWith("//")){
                 this.comment(tData[i]);
-            } else if (tData[i] === ''){
+            } else if (tData[i] === '' || tData[i].includes("{") === false){
             } else{
                 let question = new Question(this.title(tData[i]), this.format(tData[i]), "", []);
                 while(tData[i] != '' && i<tData.length){
                         if(this.answer(tData[i]) != undefined){
-                            question.answers = question.answers.concat(this.answer(tData[i]));
+                            question.answerString = question.answerString.concat(this.answer(tData[i]));
                         }
                         if(question.text == ''){
                             question.text = this.text(tData[i]);
@@ -64,6 +78,8 @@ class Parser {
                         i++;
                 }
                 question.typeQuestion = question.typeofQuestion();
+                question.goodAnswer();
+                question.feedback();
                 this.parsedQuestions.push(question);
             }
         }
@@ -93,7 +109,7 @@ class Parser {
                     return text;
                 } else 
                 answers.map(answer => {
-                    text = text.replace(answer, "<Answer>");
+                    text = text.replace(answer, "");
                 });
                 return text;
             }
