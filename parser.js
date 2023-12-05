@@ -63,7 +63,7 @@ class Parser {
         for(let i=0; i<tData.length; i++){
             if(tData[i].startsWith("//")){
                 this.comment(tData[i]);
-            } else if (tData[i] === '' || tData[i].includes("{") === false){
+            } else if (tData[i] === ''){
             } else{
                 let question = new Question(this.title(tData[i]), this.format(tData[i]), "", []);
                 while(tData[i] != '' && i<tData.length){
@@ -80,6 +80,7 @@ class Parser {
                 question.typeQuestion = question.typeofQuestion();
                 question.goodAnswer();
                 question.feedback();
+                this.specialSymbolsRevert(question.text);
                 this.parsedQuestions.push(question);
             }
         }
@@ -170,7 +171,7 @@ class Parser {
 }
 
 let fs = require('fs');
-fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
+fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }

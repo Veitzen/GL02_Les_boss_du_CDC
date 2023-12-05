@@ -11,6 +11,9 @@ class Question {
     }
 
     typeofQuestion() {
+        if((this.text.match(/<Answer>/g) || []).length == 0){
+            return "Description";
+        } 
         if((this.text.match(/<Answer>/g) || []).length == 1) {
             if((/{(T|F|TRUE|FALSE)/g.exec(this.answerString[0]) != null)) {
                 return "VraiFaux";
@@ -36,6 +39,9 @@ class Question {
     }
 
     goodAnswer(){
+        if(this.typeofQuestion() == "Description"){
+            return;
+        }
         if(this.answerString.length >1){
             this.answerString.map(answer => {
                 let results = this.retroactionAnswer(answer);
@@ -84,6 +90,30 @@ class Question {
                     break;
                 case "ChoixMultiple":
                     break;
+                case "ReponseNumerique":
+                    if(this.answerString[0].includes('=') | this.answerString[0].includes('~%')){
+                        console.log("C'est spécial");
+                    } else {
+                        if(this.answerString[0].includes(':')){
+                            let number = parseFloat(this.answerString[0].match(/\{#((\d*(,|\.)\d*)|\d*)/g)[0].replace("{#",""));
+                            let marge = parseFloat(this.answerString[0].match(/:((\d*(,|\.)\d*)|\d*)/g)[0].replace(":",""));
+                            this.goodAnswers = [number-marge, number+marge]; 
+                        } else if (this.answerString[0].includes('..')) {
+                            let borne = this.answerString[0].match(/\d*(,|\.)\d*\.\.\d(.|,)\d*/g)[0].split("..");
+                            borne.forEach((element, index) => {
+                                borne[index] = parseFloat(element.replace(",","."));
+                            });
+                            this.goodAnswers = borne; 
+                        }
+                        else {
+                            if(this.answerString[0].split("#").length == 2){
+                                this.goodAnswers = this.answerString[0].split("#")[1].trim().replace("}",""); 
+                            } else {
+                                this.goodAnswers = this.answerString[0].split("#")[1].trim();
+                            }
+                        }
+                    }
+                    break;
             default:
                 break;
         }
@@ -97,9 +127,10 @@ class Question {
             line = line.trim().slice(1,-1);
         }
         if(this.typeofQuestion() == "VraiFaux"){
-            let retroaction = line.split("#");
-            
-            return {answer : retroaction[0], retroaction : retroaction[1]};
+            if(line.includes("#")){
+                let retroaction = line.split("#");
+                return {answer : retroaction[0], retroaction : retroaction[1]};
+            }
         }
         if(line.includes("#")){
             let retroaction = line.split("#");        
