@@ -153,6 +153,8 @@ class Parser {
     }
 }
 
+module.exports = Parser;
+
 let fs = require('fs');
 fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
     if (err) {

@@ -45,6 +45,7 @@ class QCM {
     constructor(questions) {
         this.questions = questions;
     }
+    
 }
 
 module.exports = {Question, QCM};
