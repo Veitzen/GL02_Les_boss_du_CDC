@@ -86,6 +86,8 @@ var vcardDictionnary = {
             vcardDictionnary.PHONE = readlineSync.question('Entrez votre numero de telephone personnel : ');
             vcardDictionnary.EMAIL = readlineSync.question('Entrez votre email : ');
 
+            
+            //On va chercher les infos sur la Date au moment des entrées des données
             const date = new Date();
             vcardDictionnary.REVISIONyear = date.getFullYear();
             vcardDictionnary.REVISIONday = date.getDate();
@@ -94,9 +96,9 @@ var vcardDictionnary = {
             vcardDictionnary.REVISIONminute = date.getMinutes();
             vcardDictionnary.REVISIONseconde = date.getSeconds();
 
-            let dateDay = date.getDay();  //We get the current day : 1 for Monday ... 3 for Wednesday
+            let dateDay = date.getDay();  //On va chercher le jour actuel : 1 for Monday ... 3 for Wednesday
             let days = ['M','T','W','T','F','S','S'];
-            dateDay = days[dateDay-1];  //We translate that number into the letter of the first word of the day
+            dateDay = days[dateDay-1];  //On traduit cette valeur en une lettre pour symboliser le jour, ex : Monday = M, Wednesday = W
             vcardDictionnary.REVISIONdayoftheweek = dateDay;
 
             break;
@@ -133,6 +135,8 @@ var vcardDictionnary = {
             vcardDictionnary.WORKADRESSdepartment = readlineSync.question('Entrez le departement : ');
             vcardDictionnary.WORKADRESScountry = readlineSync.question('Entrez le pays : ');
 
+
+            //On va chercher les infos sur la Date au moment des entrées des données
             const date = new Date();
             vcardDictionnary.REVISIONyear = date.getFullYear();
             vcardDictionnary.REVISIONday = date.getDate();
@@ -141,9 +145,9 @@ var vcardDictionnary = {
             vcardDictionnary.REVISIONminute = date.getMinutes();
             vcardDictionnary.REVISIONseconde = date.getSeconds();
 
-            let dateDay = date.getDay();  //We get the current day : 1 for Monday ... 3 for Wednesday
+            let dateDay = date.getDay();  //On va chercher le jour actuel : 1 for Monday ... 3 for Wednesday
             let days = ['M','T','W','T','F','S','S'];
-            dateDay = days[dateDay-1];  //We translate that number into the letter of the first word of the day
+            dateDay = days[dateDay-1];  //On traduit cette valeur en une lettre pour symboliser le jour, ex : Monday = M, Wednesday = W
             vcardDictionnary.REVISIONdayoftheweek = dateDay;
 
             
