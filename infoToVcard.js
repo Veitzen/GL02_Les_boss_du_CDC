@@ -1,4 +1,3 @@
-
 //npm install readline-sync
 var readlineSync = require('readline-sync');
 const fs = require("fs");
@@ -111,7 +110,7 @@ var vcardDictionnary = {
             console.log('Nous commençons par vos informations personnelles :');
             vcardDictionnary.SURNAME = readlineSync.question('Entrez votre prenom : ');
             vcardDictionnary.NAME = readlineSync.question('Entrez votre nom : ');
-            vcardDictionnary.ROLE = readlineSync.question('Entrez vôtre rôle (ex: Dr. ) : ')
+            vcardDictionnary.ROLE = readlineSync.question('Entrez votre role (ex: Dr. ) : ')
             vcardDictionnary.NICKNAME = readlineSync.question('Entrez votre surnom : ');
             vcardDictionnary.PHOTO = readlineSync.question('Entrez l\'url de votre photo de profil : ')
             vcardDictionnary.PHONE = readlineSync.question('Entrez votre numero de telephone personnel : ');
