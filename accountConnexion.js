@@ -13,6 +13,9 @@ var readlineSync = require('readline-sync');
 const fs = require('node:fs');
 
 
+
+const accountConnexion = () => {
+
 function connexionWindow() {
         console.log(' -------------------------------------------------------------------------------------------------');
         console.log('|Welcome to the account connexion Window.                                                         |');
@@ -21,7 +24,8 @@ function connexionWindow() {
         console.log(' -------------------------------------------------------------------------------------------------');
 }
 
-
+let whoIsUser = '';
+let isIdentified = false;
 
 connexionWindow();
 choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de choisir
@@ -30,39 +34,84 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
 
         //Log-in
 
-            let isIdentified = false;
+            
+            var choixTypeUser = readlineSync.question("Qui etes vous ?\n[1] Enseignant      [2] Admin \n");
 
-            //On lit d'abord le fichier avec les mots de passe / usernames
-            fs.readFile('userLogins.txt', 'utf-8', function read(err, data) {
-                    if (err) {
-                        throw err;
-                    }
-                    const allUserLoginInfos = data;
-                
-                //On transforme le string obtenu en tableau 
-                const tab_allUserLoginInfos = allUserLoginInfos.split("\n");
-                console.log(tab_allUserLoginInfos);
-        
-                
-                while (isIdentified == false){
-                    //On demande maintenant à l'utilisateur son login et mot de passe
-                    var enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
-                    var enteredPASSWORD = readlineSync.question("Entrez votre mot de passe : ");
+            if (choixTypeUser == 1){
 
-                    for (let i = 0; i< tab_allUserLoginInfos.length; i++){
-                        if (tab_allUserLoginInfos[i] == 'Username:' + enteredID + '-Password:' + enteredPASSWORD){
-                            isIdentified = true;
-                            break;
+                //Si user est un enseignant
+
+                //On lit d'abord le fichier avec les mots de passe / usernames
+                fs.readFile('userLogins.txt', 'utf-8', function read(err, data) {
+                        if (err) {
+                            throw err;
                         }
-                        
+                        const allUserLoginInfos = data;
+                    
+                    //On transforme le string obtenu en tableau 
+                    const tab_allUserLoginInfos = allUserLoginInfos.split("\r\n");
+                    console.log(tab_allUserLoginInfos);
+            
+                    
+                    while (isIdentified == false){
+                        //On demande maintenant à l'utilisateur son login et mot de passe
+                        var enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
+                        var enteredPASSWORD = readlineSync.question("Entrez votre mot de passe : ");
+
+                        for (let i = 0; i< tab_allUserLoginInfos.length; i++){
+                            if (tab_allUserLoginInfos[i] == 'Username:' + enteredID + '-Password:' + enteredPASSWORD){
+                                isIdentified = true;
+                                break;
+                            }
+                            
+                        }
+                        if (isIdentified == true){
+                            console.log('Bonjour ' + enteredID + '. Vous êtes bien connecté.');
+                        } else {
+                            console.log('Utilisateur ou mot de passe erroné. Veuillez recommencer.');
+                        }
                     }
-                    if (isIdentified == true){
-                        console.log('Bonjour ' + enteredID + '. Vous êtes bien connecté.');
-                    } else {
-                        console.log('Utilisateur ou mot de passe erroné. Veuillez recommencer.');
+                    });
+
+                    whoIsUser = 'Enseignant';
+
+                } else if (choixTypeUser == 2){
+
+                    //Si user est un admin
+                    //On lit d'abord le fichier avec les mots de passe / usernames
+                    fs.readFile('adminLogins.txt', 'utf-8', function read(err, data) {
+                        if (err) {
+                            throw err;
+                        }
+                        const allUserLoginInfos = data;
+                    
+                    //On transforme le string obtenu en tableau 
+                    const tab_allUserLoginInfos = allUserLoginInfos.split("\r\n");
+                    console.log(tab_allUserLoginInfos);
+            
+                    
+                    while (isIdentified == false){
+                        //On demande maintenant à l'utilisateur son login et mot de passe
+                        var enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
+                        var enteredPASSWORD = readlineSync.question("Entrez votre mot de passe : ");
+
+                        for (let i = 0; i< tab_allUserLoginInfos.length; i++){
+                            if (tab_allUserLoginInfos[i] == 'Username:' + enteredID + '-Password:' + enteredPASSWORD){
+                                isIdentified = true;
+                                break;
+                            }
+                            
+                        }
+                        if (isIdentified == true){
+                            console.log('Bonjour ' + enteredID + '. Vous êtes bien connecté.');
+                        } else {
+                            console.log('Utilisateur ou mot de passe erroné. Veuillez recommencer.');
+                        }
                     }
+                    });
+
+                    whoIsUser = 'Admin';                   
                 }
-            });
 
         
         break;
@@ -111,3 +160,8 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
     }
 
 }
+
+return whoIsUser;
+};
+
+module.exports = accountConnexion;

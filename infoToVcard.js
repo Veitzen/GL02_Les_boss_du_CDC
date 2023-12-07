@@ -7,10 +7,11 @@
 
 
 
-
 var readlineSync = require('readline-sync');
 const fs = require("fs");
 
+
+const infoToVcard = () => {
 
 
 var vcardDictionnary = {
@@ -244,3 +245,7 @@ var vcardDictionnary = {
   fs.writeFile('output.vcf', vcardString, (err) => {
     if (err) throw err;
    });
+
+};
+
+module.exports = infoToVcard;
