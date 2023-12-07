@@ -1,3 +1,0 @@
-user:password:0
-user2:password:1
-admin:admin:1

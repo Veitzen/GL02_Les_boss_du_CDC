@@ -182,5 +182,5 @@ fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
         console.log("The .gift file contains error");
     }
     parser.parse(data);
-    console.log(parser.parsedQuestions);
+    console.log(parser.parsedQuestions[0].goodAnswers.answer);
 });
