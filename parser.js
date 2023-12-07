@@ -1,4 +1,5 @@
 const { Question } = require('./qcm.js');
+const colors = require('colors');
 
 // Définition de la classe parser à utiliser
 class Parser {
@@ -152,7 +153,7 @@ class Parser {
         console.log("Parsing Error ! on "+input+" -- msg : "+msg);
     }
 
-    //test
+    //Tableau ou les questions sélectionnées seront stockés 
     questionsSelectionnees = [];
 
     QuestionSelection(numeroQuestion, action) {
@@ -160,50 +161,111 @@ class Parser {
             // Ajouter la question à la liste des questions sélectionnées
             // Vous pourriez avoir une propriété pour stocker les questions sélectionnées dans votre classe
             this.questionsSelectionnees.push(this.parsedQuestions[numeroQuestion - 1]);
-            console.log(`Question ${numeroQuestion} sélectionnée.`);
+            console.log(`Question ${numeroQuestion} sélectionnée.`.green);
         
         
         
         } else if (action === 'deselection') {
             // Retirer la question de la liste des questions sélectionnées
                     if (!this.questionsSelectionnees.includes(this.parsedQuestions[numeroQuestion - 1])) {
-                        console.log("On ne peut supprimer un element qui n'existe pas");
+                        console.log("On ne peut supprimer un element qui n'existe pas".red);
                     } else if(this.questionsSelectionnees.includes(this.parsedQuestions[numeroQuestion - 1])){
                         
                     // Vous pourriez avoir une propriété pour stocker les questions sélectionnées dans votre classe
                     this.questionsSelectionnees = this.questionsSelectionnees.filter((_, index) => index + 1 !== numeroQuestion);
-                    console.log(`Question ${numeroQuestion} désélectionnée.`);
+                    console.log(`Question ${numeroQuestion} désélectionnée.`.green);
                             }
         } else {
-            console.log('Action invalide. Utilisez "selection" ou "deselection".');
+            console.log('Action invalide. Utilisez "selection" ou "deselection".'.red);
         }
 
         // Afficher les questions sélectionnées
-        console.log('Questions sélectionnées :', this.questionsSelectionnees);
+        //let index = this.parsedQuestions.indexOf(this.questionsSelectionnees);
+        console.log(`${this.parsedQuestions[numeroQuestion].text} (${this.parsedQuestions[numeroQuestion].typeQuestion})`.green);
+        //console.log('Questions sélectionnées :', this.questionsSelectionnees.text);
         
         
     }
     ///
 }
 
-let fs = require('fs'); 
+let fs = require('fs');
+const readlineSync = require('readline-sync'); 
 fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
-    let parser = new Parser();
-    if (parser.errorCount === 0) {
-    } else {
-        console.log("The .gift file contains error");
-    }
-    console.log(parser.tokenize(data));
-    parser.parse(data);
-    console.log(parser.parsedQuestions);
+   // console.log(parser.tokenize(data));
+   // parser.parse(data);
+   // console.log(parser.parsedQuestions);
     //parser.QuestionSelection(3, 'selection');
     //parser.QuestionSelection(3, 'deselection');
     //parser.QuestionSelection(4, 'deselection');
-
     //console.log(parser.questionsSelectionnees);
+
+    while (true) {
+        let choix = readlineSync.keyInSelect(['Afficher tous les questions', 'Selectionner les questions du test','Afficher tous les questions', 'Quitter'], 'Que souhaitez-vous faire ?');
+        let parser = new Parser();
+        if (choix === 0) {
+                
+                if (parser.errorCount === 0) {
+                } else {
+                    console.log("The .gift file contains error".red);
+                }
+                //console.log(parser.tokenize(data));
+                parser.parse(data);
+                console.log(parser.parsedQuestions.forEach((question,index) =>{console.log(`Question ${index}: ${question.text}   (${question.typeQuestion})\n`.green);}));
+               
+          
+        } else if (choix === 1) {
+
+                    while (true) {
+                        let choix = readlineSync.keyInSelect(['selection', 'deselection', 'Terminer la selection'], 'Quel operation souhaitez vous utiliser ?');
+                    
+                        if (choix === 0) {
+                                    let userInput = readlineSync.question('entrer un entier ');
+                                    let number=parseInt(userInput);
+                                    
+                                    parser.parse(data);// en gros il faut rappeller le parser sinon parse.parsedQuestions=0
+                                    //verifier que le nombre entrer appartient à la liste de classe
+                                    if (!isNaN(userInput) && userInput >= 0 && userInput < parser.parsedQuestions.length) {
+                                        parser.QuestionSelection(number,"selection");
+                                        
+                                    } else {
+                                        console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                                    }
+
+                        } else if (choix === 1) {
+                                    let userInput = readlineSync.question('entrer un entier ');
+                                    let number=parseInt(userInput);
+                                    
+                                    parser.parse(data);// en gros il faut rappeller le parser sinon parse.parsedQuestions=0
+                                    //verifier que le nombre entrer appartient à la liste de classe
+                                    if ( !isNaN(userInput) && userInput >= 0 && userInput < parser.parsedQuestions.length) {
+                                        parser.QuestionSelection(number,"deselection");
+                                        
+                                    } else {
+                                        console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                                    }
+                                
+                        } else if (choix === 2) {
+                        break; // Quitter le programme
+                        }
+                    }
+          
+        } else if (choix === 2) {
+            
+                if(parser.questionsSelectionnees.length != 0){
+                console.log(parser.questionsSelectionnees.forEach((question,index) =>{console.log(`Question ${index}: ${question.text}   (${question.typeQuestion})\n`.green);}));
+                }else{
+                    console.log("Aucune question n a ete selectionne pour le test. Allez remplir les questions pour votre test".red);
+                }
+                
+        
+        }else if (choix === 3) {
+            break; // Quitter le programme
+          }
+      }
 
         
 });
