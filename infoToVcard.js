@@ -1,4 +1,13 @@
 //npm install readline-sync
+
+
+//------------------------------------------------------------------------------------------------
+//Vient demander des informations à l'utilisateur et crée un fichier Vcard à partir de ces infos
+//------------------------------------------------------------------------------------------------
+
+
+
+
 var readlineSync = require('readline-sync');
 const fs = require("fs");
 

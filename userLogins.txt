@@ -1,6 +1,3 @@
-Username:Loulou
-Password:1234
-Username:Ben
-Password:benpassword
-Username:Bernard
-Password:125
+Username:Loulou-Password:1234
+Username:Ben-Password:benpassword
+Username:Bernard-Password:125
