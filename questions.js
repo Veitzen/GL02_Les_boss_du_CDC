@@ -180,5 +180,40 @@ class QCM {
         }
     }
 
+    passerQCM() {
+        //librairie pour afficher sur le terminal
+        const readline = require('readline');
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        });
+        //QCM
+        const questionsSelectionnees = [];
+        const reponsesDonnees = [];
+        function poserQuestion(index) {
+            if (index < questionsSelectionnees.length) {
+                const question = questionsSelectionnees[index];
+                console.log(`Question ${index + 1}: ${question.text}`);
+                question.answers.forEach((reponse, i) => {
+                    console.log(`${i + 1}. ${reponse}`);
+                });
+                rl.question('Votre réponse : ', (reponseUtilisateur) => {
+                    reponsesDonnees.push({
+                        question: question.text,
+                        reponse: reponseUtilisateur
+                    });
+                    poserQuestion(index + 1);
+                });
+            } else {
+                console.log('QCM terminé. Réponses données :');
+                reponsesDonnees.forEach((reponse, i) => {
+                    console.log(`${i + 1}. Question: ${reponse.question}, Réponse: ${reponse.reponse}`);
+                });e
+                rl.close();
+            }
+        }
+        poserQuestion(0);
+    }
 }
+
 
