@@ -62,7 +62,7 @@ Match the following countries with their corresponding capitals. {
     =Canada -> Ottawa
     =Italy  -> Rome
     =Japan  -> Tokyo
-    =India  -> New Delhi
+    =India  -> New Delhi#J'ai une rétroaction
     }
 
 // ===Numerical===
@@ -178,4 +178,5 @@ When was Ulysses S. Grant born? {#
      =1822:0      #Correct! 100% credit
      =%50%1822:2  #He was born in 1822.
                   You get 50% credit for being close.
+    =%25%1820..1890#Blablabla
 }

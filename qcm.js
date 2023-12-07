@@ -11,23 +11,23 @@ class Question {
     }
 
     typeofQuestion() {
-        if((this.text.match(/<Answer>/g) || []).length == 0){
+        if ((this.text.match(/<Answer>/g) || []).length == 0) {
             return "Description";
-        } 
-        if((this.text.match(/<Answer>/g) || []).length == 1) {
-            if((/{(T|F|TRUE|FALSE)/g.exec(this.answerString[0]) != null)) {
+        }
+        if ((this.text.match(/<Answer>/g) || []).length == 1) {
+            if ((/{(T|F|TRUE|FALSE)/g.exec(this.answerString[0]) != null)) {
                 return "VraiFaux";
-            } else if((/->/g).exec(this.answerString[0]) != null) {
+            } else if ((/->/g).exec(this.answerString[0]) != null) {
                 return "Appariement";
-            } else if(this.answerString[0].startsWith("{#")) {
-                if(this.answerString[0].includes("=")) {
+            } else if (this.answerString[0].startsWith("{#")) {
+                if (this.answerString[0].includes("=")) {
                     return "ReponseNumeriqueMultiple";
                 } else {
                     return "ReponseNumerique";
                 }
-            } else if(this.answerString[0] == "{}") {
+            } else if (this.answerString[0] == "{}") {
                 return "Composition";
-            } else if(this.answerString[0].includes("~")){
+            } else if (this.answerString[0].includes("~")) {
                 return "ChoixMultiple";
             }
             else {
@@ -38,121 +38,301 @@ class Question {
         }
     }
 
-    goodAnswer(){
-        if(this.typeofQuestion() == "Description"){
+    goodAnswer() {
+        if (this.typeofQuestion() == "Description") {
             return;
-        }
-        if(this.answerString.length >1){
-            this.answerString.map(answer => {
-                let results = this.retroactionAnswer(answer);
-                console.log(results);
-                if(results != undefined){
-                    if(results.length == undefined){
-                        this.retroaction = results.retroaction;
-                    } else {
-                        this.retroaction = results;
-                }
-            }
-            });
-        } else {
-            let results = this.retroactionAnswer(this.answerString[0]);
-            if(results != undefined){
-                if(results.length == undefined){
-                    this.retroaction = results.retroaction;
-                } else {
-                    this.retroaction = results;
-                }
-            }
         }
         switch (this.typeofQuestion()) {
             case "VraiFaux":
-                this.goodAnswers = this.answerString[0].slice(1,2);
+                let answer = this.answerString[0].slice(1, 2);
+                if (this.answerString[0].includes("#")) {
+                    if (this.answerString[0].match(/\#[^(\#|\~|\}|\=)]{1,}/gm).length == 2) {
+                        let retroactionGoodAnswer = this.answerString[0].match(/\#[^(\#|\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        let retroactionBadAnswer;
+                        switch (answer) {
+                            case "T":
+                                retroactionBadAnswer = this.answerString[0].match(/\#[^(\#|\~|\}|\=)]{1,}/gm)[1].replace("#", "").trim();
+                                break;
+                            case "F":
+                                retroactionBadAnswer = this.answerString[0].match(/\#[^(\#|\~|\}|\=)]{1,}/gm)[1].replace("#", "").trim();
+                                break;
+                            default:
+                                break;
+                        }
+                        this.goodAnswers = { answer: answer, retroaction: retroactionGoodAnswer, retroactionBadAnswer: retroactionBadAnswer };
+                    } else {
+                        let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        this.goodAnswers = { answer: answer, retroaction: retroaction };
+                    }
+                } else {
+                    this.goodAnswers = { answer: answer };
+                }
                 break;
             case "ReponseCourte":
                 let goodAnswerArray = this.answerString[0].slice(1, -1).split("=").slice(1);
-                if(goodAnswerArray.length == 1){
-                    this.goodAnswers = goodAnswerArray[0].trim();
-                } else {
+                // Cas où il y a une seule bonne réponse
+                if (goodAnswerArray.length == 1) {
+                    // Cas où il y a une rétroaction
+                    if (goodAnswerArray[0].slice(2).includes("#")) {
+                        let answer = goodAnswerArray[0].split("#")[0].trim();
+                        let retroaction = goodAnswerArray[0].split("#")[1].trim();
+                        this.goodAnswers = { answer: answer, retroaction: retroaction };
+                    } else {
+                        this.goodAnswers = { answer: goodAnswerArray[0].trim() };
+                    }
+                }
+                // Cas où il y a plusieurs bonnes réponses
+                else {
                     this.goodAnswers = [];
                     goodAnswerArray.map(answer => {
-                        answer = answer.trim();
-                        this.goodAnswers.push(answer);
+                        if (answer.includes("#")) {
+                            let answer = goodAnswerArray[0].split("#")[0].trim();
+                            let retroaction = goodAnswerArray[0].split("#")[1].trim();
+                            this.goodAnswers.push({ answer: answer, retroaction: retroaction });
+                        } else {
+                            answer = answer.trim();
+                            this.goodAnswers.push({ answer: answer });
+                        }
                     });
                 }
                 break;
-                case "Appariement":
-                    let answers = this.answerString[0].slice(1,-1);
-                    answers = answers.split("=").slice(1);
+            case "Appariement":
+                let answers = this.answerString[0].slice(1, -1).split("=").slice(1);
+                this.goodAnswers = [];
+                answers.map(answer => {
+                    if (answer.includes("#")) {
+                        let seperateArray = answer.split("->");
+                        let question = seperateArray[0].trim().replace("=", "");
+                        let retroaction = seperateArray[1].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        let expectedMatch = seperateArray[1].replace(/\#[^(\~|\}|\=)]{1,}/gm, "").trim();
+                        this.goodAnswers.push({ question: question, expectedMatch: expectedMatch, retroaction: retroaction });
+                    } else {
+                        this.goodAnswers.push({ question: answer.split("->")[0].trim(), answer: answer.split("->")[1].trim() });
+                    }
+                });
+                break;
+            case "ChoixMultiple":
+                // Cas où il y a plusieurs bonnes réponses ou pourcentage de points
+                if (this.answerString[0].includes("~%")) {
+                    let answers = this.answerString[0].match(/\%(-|)\d*\%[^(\~||\=|\})]{1,}/gm);
                     this.goodAnswers = [];
                     answers.map(answer => {
-                        this.goodAnswers.push({question : answer.split("->")[0].trim(), answer : answer.split("->")[1].trim()});
+                        let weight = parseFloat(answer.match(/\%(-|)\d*\%/gm)[0].replace("%", "").trim()) / 100;
+                        let answerString = answer.replace(/\%(-|)\d*\%/gm, "").trim();
+                        // Vérifier si il y a une rétroaction
+                        if (answerString.includes("#")) {
+                            answerString = answerString.split("#")[0].trim();
+                            let retroaction = answer.replace(/\%(-|)\d*\%/gm, "").match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                            let answerObject = { answer: answerString, weight: weight, retroaction: retroaction };
+                            this.goodAnswers.push(answerObject);
+                        } else {
+                            let answerObject = { answer: answerString, weight: weight };
+                            this.goodAnswers.push(answerObject);
+                        }
                     });
-                    break;
-                case "ChoixMultiple":
-                    break;
-                case "ReponseNumerique":
-                    if(this.answerString[0].includes('=') | this.answerString[0].includes('~%')){
-                        console.log("C'est spécial");
-                    } else {
-                        if(this.answerString[0].includes(':')){
-                            let number = parseFloat(this.answerString[0].match(/\{#((\d*(,|\.)\d*)|\d*)/g)[0].replace("{#",""));
-                            let marge = parseFloat(this.answerString[0].match(/:((\d*(,|\.)\d*)|\d*)/g)[0].replace(":",""));
-                            this.goodAnswers = [number-marge, number+marge]; 
-                        } else if (this.answerString[0].includes('..')) {
-                            let borne = this.answerString[0].match(/\d*(,|\.)\d*\.\.\d(.|,)\d*/g)[0].split("..");
-                            borne.forEach((element, index) => {
-                                borne[index] = parseFloat(element.replace(",","."));
-                            });
-                            this.goodAnswers = borne; 
-                        }
-                        else {
-                            if(this.answerString[0].split("#").length == 2){
-                                this.goodAnswers = this.answerString[0].split("#")[1].trim().replace("}",""); 
+                    // Ajout =[Answer] qui vaut 100% des points
+                    if (this.answerString[0].includes("=")) {
+                        let answer = this.answerString[0].match(/\=[^(|\~|\}|=)]{1,}/gm);
+                        answer.map(answer => {
+                            if (answer.includes("#")) {
+                                let answerString = answer.replace(/\=[^(\#|\~|\})]{1,}/gm, "").trim();
+                                let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                                let answerObject = { answer: answerString, weight: 1, retroaction: retroaction };
+                                this.goodAnswers.push(answerObject);
                             } else {
-                                this.goodAnswers = this.answerString[0].split("#")[1].trim();
+                                let answerString = answer.replace("=", "").trim();
+                                let answerObject = { answer: answerString, weight: 1 };
+                                this.goodAnswers.push(answerObject);
                             }
-                        }
+                        });
                     }
-                    break;
+                    // Ajout des réponses ~[Answer] qui vaut 0% des points
+                    if (/\~[^(|\~|\}|%|=)]{1,}/gm.exec(this.answerString[0]) != null) {
+                        let answerFalse = this.answerString[0].match(/\~[^(|\~|\}|%|=)]{1,}/gm);
+                        answerFalse.map(answer => {
+                            if (answer.includes("#")) {
+                                let answerString = answer.replace(/\~[^(\#|\~|\})]{1,}/gm, "").trim();
+                                let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                                let answerObject = { answer: answerString, weight: 0, retroaction: retroaction };
+                                this.goodAnswers.push(answerObject);
+                            } else {
+                                let answerString = answer.replace("~", "").trim();
+                                let answerObject = { answer: answerString, weight: 0 };
+                                this.goodAnswers.push(answerObject);
+                            }
+                        });
+                    }
+                } else {
+                    // Cas où il y a une seule bonne réponse
+                    if (this.answerString[0].includes("#")) {
+                        let answer = this.answerString[0].match(/\=[^(\~|\})]{1,}/gm)[0].replace("=", "").trim();
+                        let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        let answerObject = { answer: answer, retroaction: retroaction };
+                        this.goodAnswers = answerObject;
+                    }
+                    let answer = this.answerString[0].match(/\=[^(\#|\~|\})]{1,}/gm)[0].replace("=", "").trim();
+                    this.goodAnswers = { answer: answer };
+                }
+                break;
+            case "ReponseNumerique":
+                // Cas avec borne définie par ":"
+                if (this.answerString[0].includes(':')) {
+                    let number = parseFloat(this.answerString[0].match(/((\d*(,|\.)\d*)|\d*):/g)[0].replace(":", ""));
+                    let marge = parseFloat(this.answerString[0].match(/:((\d*(,|\.)\d*)|\d*)/g)[0].replace(":", ""));
+                    if (this.answerString[0].slice(2).includes("#")) {
+                        let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        this.goodAnswers = { answer: [number - marge, number + marge], retroaction: retroaction };
+                    } else {
+                        this.goodAnswers = { answer: [number - marge, number + marge] };
+                    }
+                    // Cas avec borne définie par ".."
+                } else if (this.answerString[0].includes('..')) {
+                    let borne = this.answerString[0].match(/\d*(,|\.)\d*\.\.\d(.|,)\d*/g)[0].split("..");
+                    borne.forEach((element, index) => {
+                        borne[index] = parseFloat(element.replace(",", "."));
+                    });
+                    if (this.answerString[0].slice(2).includes("#")) {
+                        let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        this.goodAnswers = { answer: borne, retroaction: retroaction };
+                    } else {
+                        this.goodAnswers = { answer: borne };
+                    }
+                }
+                else {
+                    // Cas avec rétroaction
+                    if (this.answerString[0].slice(2).includes("#")) {
+                        let answer = parseFloat(this.answerString[0].match(/\{#((\d*(,|\.)\d*)|\d*)/g)[0].replace("{#", ""));
+                        let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        this.goodAnswers = { answer: answer, retroaction: retroaction };
+                    } else {
+                        let answer = parseFloat(this.answerString[0].match(/\{#((\d*(,|\.)\d*)|\d*)/g)[0].replace("{#", ""));
+                        this.goodAnswers = { answer: answer };
+                    }
+                }
+                break;
+            case "ReponseNumeriqueMultiple":
+                this.goodAnswers = [];
+                // Cas où il y a plusieurs bonnes réponses ou pourcentage de points
+                if (this.answerString[0].includes("=%")) {
+                    let answers = this.answerString[0].match(/\=\%(-|)\d*\%[^(\~||\=|\})]{1,}/gm);
+                    this.goodAnswers = [];
+                    answers.map(answer => {
+                        let weight = parseFloat(answer.match(/\%(-|)\d*\%/gm)[0].replace("%", "").trim()) / 100;
+                        let answerString = answer.replace(/=\%(-|)\d*\%/gm, "").trim();
+                        if (answerString.includes(":")) {
+                            let number = parseFloat(answerString.match(/((\d*(,|\.)\d*)|\d*):/g)[0].replace(":", ""));
+                            let marge = parseFloat(answerString.match(/:((\d*(,|\.)\d*)|\d*)/g)[0].replace(":", ""));
+                            answerString = [number - marge, number + marge];
+                        } else if (answerString.includes("..")) {
+                            let borne = this.answerString[0].match(/((\d*(,|\.)\d*)|\d*)\.\.((\d*(,|\.)\d*)|\d*)/g)[0].split("..");
+                            borne.forEach((element, index) => {
+                                borne[index] = parseFloat(element.replace(",", "."));
+                            });
+                            answerString = borne;
+                        }
+                        // Vérifier si il y a une rétroaction
+                        if (answer.slice(2).includes("#")) {
+                            let retroaction = answer.replace(/\%(-|)\d*\%/gm, "").match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                            let answerObject = { answer: answerString, weight: weight, retroaction: retroaction };
+                            this.goodAnswers.push(answerObject);
+                        } else {
+                            let answerObject = { answer: answerString, weight: weight };
+                            this.goodAnswers.push(answerObject);
+                        }
+                    });
+                    // Ajout =[Answer] qui vaut 100% des points
+                    if (this.answerString[0].includes("=")) {
+                        let answer = this.answerString[0].match(/\=(\d*(,|\.)\d*|\d*)(:|\.\.| )(\d*(,|\.)\d*|\d*)[^=|}]*/gm);
+                        answer.map(answer => {
+                            let answerString = answer.match(/\=(\d*(,|\.)\d*|\d*)(:|\.\.)(\d*(,|\.)\d*|\d*)[^=]*/gm)[0];
+                            if (answerString.includes(":")) {
+                                let number = parseFloat(answerString.match(/((\d*(,|\.)\d*)|\d*):/g)[0].replace(":", ""));
+                                let marge = parseFloat(this.answerString[0].match(/:((\d*(,|\.)\d*)|\d*)/g)[0].replace(":", ""));
+                                answerString = [number - marge, number + marge];
+                            } else if (answerString.includes("..")) {
+                                let borne = this.answerString[0].match(/\d*(,|\.)\d*\.\.\d(.|,)\d*/g)[0].split("..");
+                                borne.forEach((element, index) => {
+                                    borne[index] = parseFloat(element.replace(",", "."));
+                                });
+                                answerString = borne;
+                            }
+                            if (answer.slice(2).includes("#")) {
+                                let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                                let answerObject = { answer: answerString, weight: 1, retroaction: retroaction };
+                                this.goodAnswers.push(answerObject);
+                            } else {
+                                let answerString = answer.replace("=", "").trim();
+                                let answerObject = { answer: answerString, weight: 1 };
+                                this.goodAnswers.push(answerObject);
+                            }
+                        });
+                    }
+                } else {
+                    // Cas où il y a une seule bonne réponse
+                    if (this.answerString[0].includes("#")) {
+                        let answer = this.answerString[0].match(/\=[^(\~|\})]{1,}/gm)[0].replace("=", "").trim();
+                        let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        let answerObject = { answer: answer, retroaction: retroaction };
+                        this.goodAnswers = answerObject;
+                    }
+                    let answer = this.answerString[0].match(/\=[^(\#|\~|\})]{1,}/gm)[0].replace("=", "").trim();
+                    this.goodAnswers = { answer: answer };
+                }
+                break;
             default:
                 break;
         }
     }
 
-    retroactionAnswer(answer){
-        let line = answer;
-        if(this.typeofQuestion() == "ReponseNumerique" || this.typeofQuestion() == "ReponseNumeriqueMultiple"){
-            line = line.trim().slice(2,-1);
-        } else {
-            line = line.trim().slice(1,-1);
-        }
-        if(this.typeofQuestion() == "VraiFaux"){
-            if(line.includes("#")){
-                let retroaction = line.split("#");
-                return {answer : retroaction[0], retroaction : retroaction[1]};
-            }
-        }
-        if(line.includes("#")){
-            let retroaction = line.split("#");        
-            if(retroaction.length >2){
-                let returnArray = [];
-                for(let i=1; i<retroaction.length; i++){
-                    let retroactionLine = retroaction[i].split(/=|~/g);
-                    returnArray.push({answer : retroaction[i-1].split(/=|~/g)[1], retroaction : retroactionLine[0]});
+    possibleAnswers() {
+        switch (this.typeofQuestion()) {
+            case "VraiFaux":
+                this.possibleAnswers = ["T", "F"];
+                break;
+            case "Appariement":
+                this.possibleAnswers = [];
+                this.goodAnswers.map(answer => {
+                    this.possibleAnswers.push(answer.answer);
+                });
+                break;
+            case "ChoixMultiple":
+                this.possibleAnswers = [];
+                if (this.typeofQuestion() == "ChoixMultiple") {
+                    this.goodAnswers.map(answer => {
+                        this.possibleAnswers.push(answer.answer);
+                    });
                 }
-                return returnArray;
-            } else {
-                let answer = line.slice(line.indexOf("#")+1)[0];
-                return {answer : answer, retroaction : retroaction};
+                break;
+        }
+    }
+
+    feedback() {
+        for (let i = 0; i < this.answerString.length; i++) {
+            if (this.answerString[i].includes("SYMBOL6") == true) {
+                this.feedback = this.answerString[i].split("SYMBOL6")[1].replace("}", "").trim();
             }
         }
     }
-    feedback(){
-        for(let i=0; i<this.answerString.length; i++){
-            if(this.answerString[i].includes("SYMBOL6") == true){
-                this.feedback = this.answerString[i].split("SYMBOL6")[1].replace("}","").trim();
-            }
+
+    specialSymbolsRevert(data) {
+        let specialSymbols = ["\\~", "\\=", "\\#", "\\{", "\\}", "####"];
+        specialSymbols.map((symbol, index) => {
+            data = data.replace("SYMBOL" + (index + 1), symbol);
+        });
+        return data;
+    }
+
+    analyseText() {
+        this.feedback();
+        this.specialSymbolsRevert(this.text);
+        for (let i = 0; i < this.answerString.length; i++) {
+            this.specialSymbolsRevert(this.answerString[i]);
         }
+        for (let i = 0; i < this.goodAnswer.length; i++) {
+            this.specialSymbolsRevert(this.goodAnswer[i]);
+        }
+        this.typeQuestion = this.typeofQuestion();
+        this.goodAnswer();
     }
 }
 
@@ -166,4 +346,4 @@ class QCM {
     }
 }
 
-module.exports = {Question, QCM};
+module.exports = { Question, QCM };
