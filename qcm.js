@@ -34,7 +34,6 @@ class Question {
             return "MotManquant";
         }
     }
-
 }
 
 
@@ -45,7 +44,6 @@ class QCM {
     constructor(questions) {
         this.questions = questions;
     }
-    
 }
 
 module.exports = {Question, QCM};

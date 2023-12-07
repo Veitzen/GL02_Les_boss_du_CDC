@@ -154,7 +154,7 @@ class Parser {
 }
 
 module.exports = Parser;
-
+/*
 let fs = require('fs');
 fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
     if (err) {
@@ -168,4 +168,4 @@ fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
     console.log(parser.tokenize(data));
     parser.parse(data);
     console.log(parser.parsedQuestions);
-});
+});*/

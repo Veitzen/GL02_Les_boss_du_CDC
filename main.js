@@ -1,15 +1,15 @@
 const questionsModule = require('./questions');
 const quizModule = require('./quiz');
-const questionselectionnee = questionsModule.questionselectionnee;
 const prompt = require('prompt-sync')();
+const fs = require('fs');
+const Parser = require('./parser');
+const {QCM} = require('./qcm');
 
 
-questionsModule.afficherQuestions();
 
 function accueil() {
     rl.question('Accueil, "Afficher" pour afficher les questions, "Test" pour afficher le test en cours', (commande) => {
         if (commande.toLowerCase() === 'Afficher'){
-            questionsModule.afficherQuestions();
             rl.question('Entrez l indice de la question à selectionner ou deselectionner, "Retour" pour revenir à l accueil', (indice) => {
                 if (indice.parseInt(valeur, 10)){
                     console.log('Vous avez choisi la question ${index}');
@@ -47,7 +47,6 @@ function accueil() {
 function accueil2(){
     const commande = prompt('Accueil, "Afficher" pour afficher les questions, "Test" pour afficher le test en cours');
     if (commande === 'Afficher'){
-        questionsModule.afficherQuestions();
         const indice = prompt('Entrez l indice de la question à selectionner ou deselectionner, "Retour" pour revenir à l accueil');
             if (indice === 'Retour'){
                 accueil2();
@@ -78,9 +77,9 @@ function accueil2(){
     }
 }
 
-prompt('Accueil, "Afficher" pour afficher les questions, "Test" pour afficher le test en cours');
-accueil2();
-
+const tabQuestions = questionsModule.importerQuestions();
+console.log(tabQuestions);
+//questionsModule.afficherQuestions(tabQuestions);
 
 
 /*function poserQuestions() {

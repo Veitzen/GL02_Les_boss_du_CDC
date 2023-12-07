@@ -3,7 +3,34 @@ const Parser = require('./parser');
 const {Question} = require('./qcm');
 const {QCM} = require('./qcm');
 
-function afficherQuestions() {
+function importerQuestions(){
+    const parser = new Parser();
+    //const toutesLesQuestions = [];
+    let data = fs.readFileSync('GIFT-examples.gift', 'utf8');
+        parser.parse(data);
+        let results = parser.parsedQuestions;
+        /*const Questions = parser.parsedQuestions;
+        Questions.forEach((parsedQuestion) => {
+            const question = new Question(
+                parsedQuestion.title,
+                parsedQuestion.format,
+                parsedQuestion.text,
+                parsedQuestion.answers
+            );
+            toutesLesQuestions.push(question);
+        });*/
+        return results;
+}
+
+function afficherQuestions(toutesLesQuestions) {
+    toutesLesQuestions.forEach((parsedQuestion, index) => {
+        console.log(`aaaaaaaaaaaaaaaaaaaaa : + ${index + 1}. ${parsedQuestion.text} + \n`);
+    });
+}
+
+//.retroaction
+//.goodAnswers[0]
+/*function afficherQuestions() {
     // Créez une instance de Parser
     const parser = new Parser();
 
@@ -12,20 +39,18 @@ function afficherQuestions() {
         if (err) {
             return console.log(err);
         }
-
         // Effectuez le parsing
         parser.parse(data);
 
         // Accédez aux questions analysées
-        const questions = parser.parsedQuestions;
+        const toutesLesQuestions = parser.parsedQuestions;
 
-        // Affichez les questions sans les réponses
-        questions.forEach((question, index) => {
-            console.log(`${index + 1}. ${question.text}`);
-            console.log(); // Ligne vide pour séparer les questions
+        toutesLesQuestions.forEach((parsedQuestion, index) => {
+            console.log(`${index + 1}. ${parsedQuestion.text}`);
+            console.log();
         });
     });
-}
+}*/
 
 function afficherQuestion(index) {
     // Créez une instance de Parser
@@ -102,6 +127,7 @@ function dansLeTest(index) {
 
 // Exportez les méthodes pour pouvoir les utiliser dans d'autres fichiers
 module.exports = {
+    importerQuestions,
     afficherQuestions,
     afficherQuestion,
     selectionnerQuestion,
@@ -111,7 +137,7 @@ module.exports = {
 };
 
 
-//METHODES
+/*METHODES
 
 class Question {
     static afficher(questions, index) {
@@ -214,6 +240,6 @@ class QCM {
         }
         poserQuestion(0);
     }
-}
+}*/
 
 
