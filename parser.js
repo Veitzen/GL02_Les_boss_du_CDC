@@ -204,14 +204,14 @@ class Parser {
             //console.log(``);
     
             // Demander à l'enseignant de fournir une réponse simulée
-            let userInput = readlineSync.question(`Question ${i + 1}: ${question.text} ________`);
-            let reponse=parseInt(userInput);
+            let reponse = readlineSync.question(`Question ${i + 1}: ${question.text} ________`);
+            
             
             const rep=`${question.answers}`;
-           // const regex = /\{=(.*?)\}/;
-            const match = rep.match(/\{=(.*?)\}/);
-            const chaineExtraite = match ? match[1] : null;
-            //console.log(chaineExtraite);
+           //n'extrait pas toute les reponses
+            let  match = rep.match(/\{=(.*?)\}/);
+            let chaineExtraite = match ? match[1] : null;
+            
             if(reponse===chaineExtraite){
                 point=point+1;
             }
