@@ -7,3 +7,9 @@
     "vega-lite": "^5.16.3"
   }
 }
+{
+  "dependencies": {
+    "chevrotain": "^11.0.3",
+    "readline-sync": "^1.4.10"
+  }
+}
