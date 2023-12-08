@@ -6,8 +6,8 @@ var fs = require('fs');
 var { QCM } = require('./qcm.js');
 var colors = require('colors');
 var infoToVcard = require('./infoToVcard.js');
-var {comparerTest} = require('./dossier.js');
-var {statistiques} = require('./questions.js');
+var { comparerTest } = require('./dossier.js');
+var { statistiques } = require('./questions.js');
 
 isConneted = false;
 while (true) {
@@ -43,61 +43,116 @@ while (true) {
         }
     } else {
         let choix = readlineSync.keyInSelect(possibleCommands, 'Que souhaitez-vous faire ?');
+        if (whoIsUser[0] == "Enseignant") {
+            if (choix === 0) {
+                let results = parcourirBanqueQuestion();
+                importQuestions = results.f;
+                path = results.d;
+            } else
+                if (choix === 1) {
+                    while (true) {
+                        let choix1 = readlineSync.keyInSelect(['Selection', 'Deselection', 'Terminer la selection'], 'Quel operation souhaitez vous utiliser ?');
+                        if (choix1 === 0) {
+                            let userInput = readlineSync.question('Entrer un entier entre 0 et ' + (importQuestions.questions.length - 1) + ' : ');
+                            let number = parseInt(userInput);
+                            if (!isNaN(userInput) && userInput >= 0 && userInput < importQuestions.questions.length - 1) {
+                                questionSelection(importQuestions, test, number, "selection");
 
-        if (choix === 0) {
-            importQuestions, path = parcourirBanqueQuestion();
-        } else
-            if (choix === 1) {
-                while (true) {
-                    let choix1 = readlineSync.keyInSelect(['Selection', 'Deselection', 'Terminer la selection'], 'Quel operation souhaitez vous utiliser ?');
-                    if (choix1 === 0) {
-                        let userInput = readlineSync.question('Entrer un entier entre 0 et ' + (importQuestions.questions.length - 1) + ' : ');
-                        let number = parseInt(userInput);
-                        if (!isNaN(userInput) && userInput >= 0 && userInput < importQuestions.questions.length - 1) {
-                            questionSelection(importQuestions, test, number, "selection");
+                            } else {
+                                console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                            }
 
-                        } else {
-                            console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                        } else if (choix1 === 1) {
+                            let userInput = readlineSync.question('Entrer un entier entre 0 et ' + (test.questions.length - 1) + ' : ');
+                            let number = parseInt(userInput);
+                            if (!isNaN(userInput) && userInput >= 0 && userInput < importQuestions.questions.length) {
+                                questionSelection(importQuestions, test, number, "deselection");
+
+                            } else {
+                                console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                            }
+                        } else if (choix1 === 2) {
+                            break; // Quitter le programme
                         }
-
-                    } else if (choix1 === 1) {
-                        let userInput = readlineSync.question('Entrer un entier entre 0 et ' + (test.questions.length - 1) + ' : ');
-                        let number = parseInt(userInput);
-                        if (!isNaN(userInput) && userInput >= 0 && userInput < importQuestions.questions.length) {
-                            questionSelection(importQuestions, test, number, "deselection");
-
-                        } else {
-                            console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
-                        }
-                    } else if (choix1 === 2) {
-                        break; // Quitter le programme
                     }
+                } else if (choix === 2) {
+                    test.afficherToutesQuestions();
+
+                } else if (choix === 3) {
+                    test.verifierQualite();
+                } else if (choix === 4) {
+                    test.passerTest();
+
+                } else if (choix === 5) {
+                    test.exporterFichier();
+                    console.log("Le fichier a été exporté avec succès.".green);
                 }
-            } else if (choix === 2) {
-                test.afficherToutesQuestions();
+                else if (choix === 6) {
+                    infoToVcard(whoIsUser);
+                    console.log("Le fichier a été exporté avec succès.".green);
+                }
+                else if (choix === 7) {
+                    statistiques(test.questions);
+                    console.log("Le fichier a été exporté avec succès.".green);
+                }
+        } else {
+            if (choix === 0) {
+                let results = parcourirBanqueQuestion();
+                importQuestions = results.f;
+                path = results.d;
+            } else
+                if (choix === 1) {
+                    while (true) {
+                        let choix1 = readlineSync.keyInSelect(['Selection', 'Deselection', 'Terminer la selection'], 'Quel operation souhaitez vous utiliser ?');
+                        if (choix1 === 0) {
+                            let userInput = readlineSync.question('Entrer un entier entre 0 et ' + (importQuestions.questions.length - 1) + ' : ');
+                            let number = parseInt(userInput);
+                            if (!isNaN(userInput) && userInput >= 0 && userInput < importQuestions.questions.length - 1) {
+                                questionSelection(importQuestions, test, number, "selection");
 
-            } else if (choix === 3) {
-                test.verifierQualite();
-            } else if (choix === 4) {
-                test.passerTest();
+                            } else {
+                                console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                            }
 
-            } else if (choix === 5) {
-                test.exporterFichier();
-                console.log("Le fichier a été exporté avec succès.".green);
-            }
-            else if (choix === 6) {
-                infoToVcard(whoIsUser);
-            }
-            else if (choix === 7) {
-                statistiques(test.questions);
-            }
-            else if (choix === 8) {
-                let folderPath = path.replace(/[^\/]{1,}$/gm, "")
-                comparerTest(path, folderPath);
-            }
-            else if (choix === 9) {
-                break; // Quitter le programme
-            }
+                        } else if (choix1 === 1) {
+                            let userInput = readlineSync.question('Entrer un entier entre 0 et ' + (test.questions.length - 1) + ' : ');
+                            let number = parseInt(userInput);
+                            if (!isNaN(userInput) && userInput >= 0 && userInput < importQuestions.questions.length) {
+                                questionSelection(importQuestions, test, number, "deselection");
+
+                            } else {
+                                console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
+                            }
+                        } else if (choix1 === 2) {
+                            break; // Quitter le programme
+                        }
+                    }
+                } else if (choix === 2) {
+                    test.afficherToutesQuestions();
+
+                } else if (choix === 3) {
+                    test.verifierQualite();
+                } else if (choix === 4) {
+                    test.passerTest();
+
+                } else if (choix === 5) {
+                    test.exporterFichier();
+                    console.log("Le fichier a été exporté avec succès.".green);
+                }
+                else if (choix === 6) {
+                    infoToVcard(whoIsUser);
+                }
+                else if (choix === 7) {
+                    statistiques(test.questions);
+                }
+                else if (choix === 8) {
+                    let folderPath = path.replace(/[^\/]{1,}$/gm, "")
+                    comparerTest(path, folderPath);
+                }
+                else if (choix === 9) {
+                    break; // Quitter le programme
+                }
+        }
     }
 }
 
@@ -125,7 +180,7 @@ function parcourirBanqueQuestion() {
     importQuestions = new QCM(parser.parsedQuestions);
     console.log("Voici les questions importées :");
     importQuestions.afficherToutesQuestions();
-    return { f: importQuestions, d :path};
+    return { f: importQuestions, d: path };
 }
 
 function questionSelection(parsedQuestions, test, numeroQuestion, action) {

@@ -346,7 +346,9 @@ class Question {
         this.typeOfQuestion = this.typeofQuestion();
         this.getfeedback();
         this.goodAnswer();
-        this.specialSymbolsRevert(this.answerString[0])
+        if(this.answerString[0] != undefined){
+            this.specialSymbolsRevert(this.answerString[0])
+        }
         this.findPossibleAnswers();
         this.specialSymbolsRevert(this.text);
     }

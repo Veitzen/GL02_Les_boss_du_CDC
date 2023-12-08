@@ -29,7 +29,7 @@ function questionsDossiers(cheminDossier){
     let questionsAllFichiers = [];
     const nomsFichiers = obtenirFichiers(cheminDossier);
     nomsFichiers.forEach ((fichier) => {
-        const questionOneFichier = importerQuestions(cheminDossier+ fichier);
+        const questionOneFichier = importerQuestions(cheminDossier + '/' +fichier);
         questionsAllFichiers = questionsAllFichiers.concat(questionOneFichier);
     });
     return questionsAllFichiers;
@@ -49,7 +49,7 @@ function typeQuestion(Questions){
        ];
     Questions.forEach((question) => {
         countType.forEach((type) => {
-            if (question.typeQuestion === type[0]) {
+            if (question.typeOfQuestion === type[0]) {
                 type[1]++;
             }
         });
