@@ -7,7 +7,7 @@
 //Si utilisateur est bien login : isIdentified = true, enteredID = 'Nom de l'utilisateur'
 //
 //parametres entrée : void
-//parametres sortie : whoIsUser[0] = type d'utilisateur entre Admin et Enseignant
+//parametres sortie : whoIsUser[0] = type d'utilisateur entre SRYEM et Enseignant
 // ---------------- : whoIsUser[1] = nom de l'utilisateur
 //---------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
         //Log-in
 
             
-            var choixTypeUser = readlineSync.question("Qui etes vous ?\n[1] Enseignant      [2] Admin \n");
+            var choixTypeUser = readlineSync.question("Qui etes vous ?\n[1] Enseignant      [2] SRYEM \n");
 
             if (choixTypeUser == 1){
 
@@ -113,7 +113,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                     }
                     
 
-                    whoIsUser[0] = 'Admin';   
+                    whoIsUser[0] = 'SRYEM';   
                     whoIsUser[1] = enteredID;                
                 }
 
