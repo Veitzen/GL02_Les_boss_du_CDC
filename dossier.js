@@ -72,7 +72,7 @@ function comparerTest(cheminTest, cheminGroupe){
     const repartGroupe = TypeQuestion(groupeAComparer); //repartition des questions dans le groupe
     console.log('Voici une comparaison de la répartitions des types de questions dans votre test avec le dossier de test choisi \n');
     repartTest.forEach((type, index) => {
-        console.log(`${type[0]} : votre test -> ${type[2]} // ${repartGroupe[index][2]}`);
+        console.log(`${type[0]} : votre test -> ${type[2]}% // ${repartGroupe[index][2]}%`);
     })
 }
 
