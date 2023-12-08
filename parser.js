@@ -152,99 +152,24 @@ class Parser {
         this.errorCount++;
         console.log("Parsing Error ! on "+input+" -- msg : "+msg);
     }
-
-    //Tableau ou les questions sélectionnées seront stockés 
-    questionsSelectionnees = [];
-
-    QuestionSelection(numeroQuestion, action) {
-        if (action === 'selection') {
-            // Ajouter la question à la liste des questions sélectionnées
-            // Vous pourriez avoir une propriété pour stocker les questions sélectionnées dans votre classe
-            this.questionsSelectionnees.push(this.parsedQuestions[numeroQuestion - 0]);
-            console.log(`Question ${numeroQuestion} sélectionnée.`.green);
-        
-            console.log(`${this.parsedQuestions[numeroQuestion].text} (${this.parsedQuestions[numeroQuestion].typeQuestion})`.green);
-        
-        } else if (action === 'deselection') {
-            // Retirer la question de la liste des questions sélectionnées
-                    if (!this.questionsSelectionnees.includes(this.parsedQuestions[numeroQuestion - 0])) {
-                        console.log("On ne peut supprimer un element qui n'existe pas".red);
-                    } else if(this.questionsSelectionnees.includes(this.parsedQuestions[numeroQuestion - 0])){
-                        
-                    // Vous pourriez avoir une propriété pour stocker les questions sélectionnées dans votre classe
-                    this.questionsSelectionnees = this.questionsSelectionnees.filter((question) => question !== this.parsedQuestions[numeroQuestion]);
-                    console.log(`Question ${numeroQuestion} désélectionnée.`.green);
-                            }
-        } else {
-            console.log('Action invalide. Utilisez "selection" ou "deselection".'.red);
-        }
-
-        
-        
-        
-    }
-    AfficherSelection(){
-        console.log(this.questionsSelectionnees.forEach((questions,index) =>{console.log(`Question ${index}: ${questions.text}   (${questions.typeQuestion})\n`.green);}));
-    }
-
-    hasDuplicates() {
-        return _.uniq(this.questionsSelectionnees).length !== this.questionsSelectionnees.length;
-    }
-
-    simulateTest() {
-        // Afficher le message de démarrage de la simulation
-        console.log('\n\tSimulation du test en cours...\n');
-        console.log('Le test est en marche commencer deja a remplir:\n');
-        let point=0;
-        // Boucler sur les questions sélectionnées
-        for (let i = 0; i < this.questionsSelectionnees.length; i++) {
-            const question = this.questionsSelectionnees[i];
-            
-            // Afficher la question
-            //console.log(``);
-    
-            // Demander à l'enseignant de fournir une réponse simulée
-            let reponse = readlineSync.question(`Question ${i + 1}: ${question.text} ________`);
-            
-            
-            const rep=`${question.answers}`;
-           //n'extrait pas toute les reponses
-            let  match = rep.match(/\{=(.*?)\}/);
-            let chaineExtraite = match ? match[1] : null;
-            
-            if(reponse===chaineExtraite){
-                point=point+1;
-            }
-    
-            // Afficher la réponse correcte (à des fins de vérification)
-            console.log(`Reponse correcte: ${question.answers}`);
-    
-            }
-    
-        // Afficher le message de fin de simulation
-        console.log('Simulation du test terminée.Et vous avez eu '+point+'/'+this.questionsSelectionnees.length);
-    }
 }
+
+module.exports = {Parser};
 
 let fs = require('fs');
 const readlineSync = require('readline-sync'); 
+const m = require('./Menu principal.js');
 let parser = new Parser();
+let parsedQuestions = m.importerquestions;
 fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
-    }
-   // console.log(parser.tokenize(data));
-   // parser.parse(data);
-   // console.log(parser.parsedQuestions);
-    //parser.QuestionSelection(3, 'selection');
-    //parser.QuestionSelection(3, 'deselection');
-    //parser.QuestionSelection(4, 'deselection');
-    //console.log(parser.questionsSelectionnees);
+    }    
 
     while (true) {
         let choix = readlineSync.keyInSelect(['Afficher tous les questions', 'Selectionner les questions du test','Afficher tous les questions selectionnes','Qualiter du test','Simuler Test','Quitter'], 'Que souhaitez-vous faire ?');
         
-        parser.parse(data);
+        //parser.parse(data);
         
         if (choix === 0) {
                 
@@ -254,11 +179,11 @@ fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
                 }
                 //console.log(parser.tokenize(data));
                 
-                console.log(parser.parsedQuestions.forEach((questions,index) =>{console.log(`Question ${index}: ${questions.text}   (${questions.typeQuestion})\n`.green);}));
+                console.log(parsedQuestions((questions,index) =>{console.log(`Question ${index}: ${questions.text}   (${questions.typeQuestion})\n`.green);}));
                
           
         } else if (choix === 1) {
-
+    
                     while (true) {
                         let choix1 = readlineSync.keyInSelect(['selection', 'deselection', 'Terminer la selection'], 'Quel operation souhaitez vous utiliser ?');
                     
@@ -269,12 +194,12 @@ fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
                                     //parser.parse(data);// en gros il faut rappeller le parser sinon parse.parsedQuestions=0
                                     //verifier que le nombre entrer appartient à la liste de classe
                                     if (!isNaN(userInput) && userInput >= 0 && userInput < parser.parsedQuestions.length) {
-                                        parser.QuestionSelection(number,"selection");
+                                        m.questionSelection(number,"selection");
                                         
                                     } else {
                                         console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
                                     }
-
+    
                         } else if (choix1 === 1) {
                                     let userInput = readlineSync.question('entrer un entier ');
                                     let number=parseInt(userInput);
@@ -282,7 +207,7 @@ fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
                                     //parser.parse(data);// en gros il faut rappeller le parser sinon parse.parsedQuestions=0
                                     //verifier que le nombre entrer appartient à la liste de classe
                                     if ( !isNaN(userInput) && userInput >= 0 && userInput < parser.parsedQuestions.length) {
-                                        parser.QuestionSelection(number,"deselection");
+                                        m.questionSelection(number,"deselection");
                                         
                                     } else {
                                         console.log('L\'index entré n\'appartient pas à la liste d\'instances de la classe question.'.red);
@@ -296,10 +221,10 @@ fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
                     }
           
         } else if (choix === 2) {
-              parser.AfficherSelection();
+              m.afficherSelection();
         
         }else if (choix === 3) {
-                        const a=parser.hasDuplicates();
+                        const a=m.hasDuplicates();
                     if(!a){
                         console.log("Le test sans problème".green);
                     }else{
@@ -307,13 +232,11 @@ fs.readFile('U5-p49-Subject_verb_agreement.gift', 'utf8', function (err, data) {
                     }
               
       }else if (choix === 4) {
-        parser.simulateTest();
+        m.simulateTest();
              
       
       }else if (choix === 5) {
             break; // Quitter le programme
           }
-      }
-
-        
+    }	
 });
