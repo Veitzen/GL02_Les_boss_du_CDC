@@ -245,7 +245,7 @@ var vcardDictionnary = {
 
 
   //On crée le fichier vcard
-  fs.writeFile('user_' + userID + '.vcf', vcardString, (err) => {
+  fs.writeFile('./userVcf/'+'user_' + userID + '.vcf', vcardString, (err) => {
     if (err) throw err;
    });
 
