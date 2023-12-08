@@ -3,6 +3,7 @@ const {Parser} = require('./parser');
 const {Question} = require('./qcm');
 const {QCM} = require('./qcm');
 const vega = require('vega');
+const vegalite = require('vega-lite');
 
 
 //importer les questions depuis les fichiers à l'aide du parser
@@ -94,17 +95,17 @@ function statistiques(Test){
         "mark": "bar",
         "encoding": {
             "x": {"field": "type", "type": "nominal"},
-            "y": {"field": "count", "type": "quantitative", "aggregate": "count"}
-        }
+            "y": {"field": "count", "type": "quantitative"},
+        },
     };
-    const runtime = vega.parse(spec);
-    const view = new vega.View(runtime, { renderer: 'none' })
-        .initialize()
-        .hover()
-        .run();
-    view.toSVG()
-        .then(svg => {
+
+    let specCompiled = vegalite.compile(spec).spec;
+    const runtime = vega.parse(specCompiled);
+    const view = new vega.View(runtime).renderer('svg').run();
+    mySvg = view.toSVG();
+        mySvg.then(svg => {
             fs.writeFileSync('histogram.svg', svg);
+            view.finalize();
             console.log('L\'histogramme a été enregistré avec succès dans le fichier "histogram.svg".');
         })
         .catch(error => console.error(error));
