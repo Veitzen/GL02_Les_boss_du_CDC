@@ -173,19 +173,20 @@ class Parser {
     }
 }
 
-let fs = require('fs');
-fs.readFile('export.gift', 'utf8', function (err, data) {
-    if (err) {
-        return console.log(err);
-    }
-    let parser = new Parser();
-    if (parser.errorCount === 0) {
-    } else {
-        console.log("The .gift file contains error");
-    }
-    parser.parse(data);
-    console.log(parser.parsedQuestions);
-    let qcm = new QCM(parser.parsedQuestions);
-    //qcm.exporterFichier();
-    qcm.passerTest();
-});
+// let fs = require('fs');
+// fs.readFile('questions_data/Autre/GIFT-examples.gift', 'utf8', function (err, data) {
+//     if (err) {
+//         return console.log(err);
+//     }
+//     let parser = new Parser();
+//     if (parser.errorCount === 0) {
+//     } else {
+//         console.log("The .gift file contains error");
+//     }
+//     parser.parse(data);
+//     console.log(parser.parsedQuestions);
+//     let qcm = new QCM(parser.parsedQuestions);
+//     //qcm.exporterFichier();
+// });
+
+exports.Parser = Parser;

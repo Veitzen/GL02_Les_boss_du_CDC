@@ -361,17 +361,18 @@ class QCM {
         this.questions = questions;
     }
 
-    afficherQuestion(question) {
-        let stringToDisplay = "----- Question : " + question.title + "------";
+    afficherQuestion(question, index) {
+        let stringToDisplay = "------ Question " + index+ " : " + question.title + "------";
         stringToDisplay += "\nType de question : " + question.typeOfQuestion;
         stringToDisplay += "\nTexte : " + question.text;
         question.possibleAnswers != undefined ? stringToDisplay += "\nRéponses possibles : " + question.possibleAnswers : "";
+         stringToDisplay += "\n";
         console.log(stringToDisplay);
     }
 
     afficherToutesQuestions() {
-        this.questions.map((question) => {
-            this.afficherQuestion(question);
+        this.questions.map((question, index) => {
+            this.afficherQuestion(question, index);
         })
     }
 
