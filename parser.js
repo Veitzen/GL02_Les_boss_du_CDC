@@ -5,10 +5,17 @@ class Parser {
     parsedQuestions = [];
     comments = [];
     errorCount = 0;
+    specialSymbols = ["\\~", "\\=", "\\#", "\\{", "\\}", "####"];
 
     tokenize(data) {
-        let tData = data.replace("\t", "");
-        tData = tData.split("\n");
+        // Identification des symboles spéciaux et remplacement par SYMBOL1, SYMBOL2, etc.
+        this.specialSymbols.map((symbol,index) => {
+            data = data.replace(symbol, "SYMBOL" + (index+1));
+        });
+        // Suppression des tabulations
+        data.replace("\t", "");
+        // Séparation par ligne
+        let tData = data.split("\n");
         tData = tData.map(line => {
             line = line.trim();
             if((/\s+/g).exec(line) !== null){
@@ -44,17 +51,24 @@ class Parser {
         return tData;
     }
 
+    specialSymbolsRevert(data){
+        this.specialSymbols.map((symbol,index) => {
+            data = data.replace("SYMBOL" + (index+1), symbol);
+        });
+        return data;
+    }
+
     parse(data) {
         let tData = this.tokenize(data);
         for(let i=0; i<tData.length; i++){
             if(tData[i].startsWith("//")){
-                this.comment(tData[i]);
+                this.getComment(tData[i]);
             } else if (tData[i] === ''){
             } else{
-                let question = new Question(this.title(tData[i]), this.format(tData[i]), "", []);
+                let question = new Question(this.getTitle(tData[i]), this.format(tData[i]), "", []);
                 while(tData[i] != '' && i<tData.length){
-                        if(this.answer(tData[i]) != undefined){
-                            question.answers = question.answers.concat(this.answer(tData[i]));
+                        if(this.getAnswerString(tData[i]) != undefined){
+                            question.answerString = question.answerString.concat(this.getAnswerString(tData[i]));
                         }
                         if(question.text == ''){
                             question.text = this.text(tData[i]);
@@ -63,19 +77,23 @@ class Parser {
                         }
                         i++;
                 }
-                question.typeQuestion = question.typeofQuestion();
+                question.analyseText();
+                this.specialSymbolsRevert(question.text);
+                for(let i=0; i<question.answerString.length; i++){
+                    this.specialSymbolsRevert(question.answerString[i]);
+                }
                 this.parsedQuestions.push(question);
             }
         }
     }
 
-    // Comment : "//" *(VCHAR / WSP) \n ; donc à chaque ligne = 1er commentaire s'il commence par //
-    comment(line){
+    // getComment : "//" *(VCHAR / WSP) \n ; donc à chaque ligne = 1er commentaire s'il commence par //
+    getComment(line){
         this.comments.push(line.replace("// ", ""));
     }
 
-    // Title : "::" *(VCHAR / WSP) "::" \n ; pareil ici, on prend une ligne et on vérifie si elle commence par ::
-    title(line){
+    // getTitle : "::" *(VCHAR / WSP) "::" \n ; pareil ici, on prend une ligne et on vérifie si elle commence par ::
+    getTitle(line){
         if(line.startsWith("::")){
             let toCheckData = line.slice(2);
             if(toCheckData.includes("::")){
@@ -87,13 +105,13 @@ class Parser {
             } 
             else{
                 // Tout le texte est le titre de la question
-                let answers = this.answer(line);
+                let answers = this.getAnswerString(line);
                 let text = line;
                 if(answers == undefined){
                     return text;
                 } else 
                 answers.map(answer => {
-                    text = text.replace(answer, "<Answer>");
+                    text = text.replace(answer, "");
                 });
                 return text;
             }
@@ -119,10 +137,10 @@ class Parser {
     // Text : *(VCHAR / WSP) \n ; ce qui est en dehors des crochets
     text(line){
         let text = line;
-        if(line.includes("::")){
-            text = line.replace("::"+this.title(line)+"::", "");
+        if(line.includes("::")){ 
+            text = line.replace("::"+this.getTitle(line)+"::", "");
         }
-        let answers = this.answer(line);
+        let answers = this.getAnswerString(line);
         if(answers == undefined){
             return text;
         } else {
@@ -134,7 +152,7 @@ class Parser {
     }
 
     // Answer : {*(VCHAR / WSP)} \n ; ce qui est entre les crochets
-    answer(line){
+    getAnswerString(line){
         let regexPattern = /{.*?}/g;
         let answer;
         let answerArray = [];
@@ -153,9 +171,11 @@ class Parser {
     }
 }
 
-module.exports = Parser;
-/*
-let fs = require('fs');
+module.exports = {
+    Parser
+};
+
+/*let fs = require('fs');
 fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
@@ -165,7 +185,6 @@ fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
     } else {
         console.log("The .gift file contains error");
     }
-    console.log(parser.tokenize(data));
     parser.parse(data);
     console.log(parser.parsedQuestions);
 });*/

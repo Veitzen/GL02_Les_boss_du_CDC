@@ -1,245 +1,124 @@
 const fs = require('fs');
-const Parser = require('./parser');
+const {Parser} = require('./parser');
 const {Question} = require('./qcm');
 const {QCM} = require('./qcm');
+const vega = require('vega');
 
+
+//importer les questions depuis les fichiers à l'aide du parser
+//retourner un tableau de class Question
 function importerQuestions(){
     const parser = new Parser();
-    //const toutesLesQuestions = [];
     let data = fs.readFileSync('GIFT-examples.gift', 'utf8');
         parser.parse(data);
         let results = parser.parsedQuestions;
-        /*const Questions = parser.parsedQuestions;
-        Questions.forEach((parsedQuestion) => {
-            const question = new Question(
-                parsedQuestion.title,
-                parsedQuestion.format,
-                parsedQuestion.text,
-                parsedQuestion.answers
-            );
-            toutesLesQuestions.push(question);
-        });*/
         return results;
 }
 
-function afficherQuestions(toutesLesQuestions) {
-    toutesLesQuestions.forEach((parsedQuestion, index) => {
-        console.log(`aaaaaaaaaaaaaaaaaaaaa : + ${index + 1}. ${parsedQuestion.text} + \n`);
+//parcourir le tableau des class Question et afficher l'index et le contenu de chaque question
+function afficherAllQuestions(Questions) {
+    Questions.forEach((parsedQuestion, index) => {
+        console.log(`${index + 1}. ${parsedQuestion.text} \n`);
     });
 }
 
-//.retroaction
-//.goodAnswers[0]
-/*function afficherQuestions() {
-    // Créez une instance de Parser
-    const parser = new Parser();
-
-    // Lisez le fichier et effectuez le parsing
-    fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-        // Effectuez le parsing
-        parser.parse(data);
-
-        // Accédez aux questions analysées
-        const toutesLesQuestions = parser.parsedQuestions;
-
-        toutesLesQuestions.forEach((parsedQuestion, index) => {
-            console.log(`${index + 1}. ${parsedQuestion.text}`);
-            console.log();
-        });
-    });
-}*/
-
-function afficherQuestion(index) {
-    // Créez une instance de Parser
-    const parser = new Parser();
-
-    // Lisez le fichier et effectuez le parsing
-    fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-
-        // Effectuez le parsing
-        parser.parse(data);
-
-        // Accédez aux questions analysées
-        const questions = parser.parsedQuestions;
-
-        // Vérifiez si l'index est valide
-        if (index >= 0 && index < questions.length) {
-            // Affichez la question correspondante
-            const question = questions[index];
-            console.log(`${index + 1}. ${question.text}`);
-        } else {
-            console.log('Index invalide. Veuillez spécifier un index valide.');
-        }
-    });
+//afficher la question d'index précisé par l'utilisateur
+function afficherQuestion(Questions, index) {
+    if (index > 0 && index <= Questions.length){
+        console.log(`${index}. ${Questions[index-1].text} \n`);
+    }else{
+        console.log('Index invalide');
+        return false;
+    }
 }
-
-const questionselectionnee = []; // Liste pour stocker les questions sélectionnées
-
-function selectionnerQuestion(index) {
-    // Créez une instance de Parser
-    const parser = new Parser();
-
-    // Lisez le fichier et effectuez le parsing
-    fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-
-        // Effectuez le parsing
-        parser.parse(data);
-
-        // Accédez aux questions analysées
-        const questions = parser.parsedQuestions;
-
-        // Vérifiez si l'index est valide
-        if (index >= 0 && index < questions.length) {
-            // Ajoutez la question à la liste questionselectionnee
-            questionselectionnee.push(questions[index]);
-            console.log(`Question ${index + 1} sélectionnée et ajoutée à la liste.`);
-        } else {
-            console.log('Index invalide. Veuillez spécifier un index valide.');
-        }
-    });
-}
-
-function deselectionnerQuestion(index) {
-    // Vérifiez si l'index est valide
-    if (index >= 0 && index < questionselectionnee.length) {
-        // Supprimez la question de la liste questionselectionnee
-        const deselectedQuestion = questionselectionnee.splice(index, 1)[0];
-        console.log(`Question ${index + 1} désélectionnée et retirée de la liste.`);
-        return deselectedQuestion;
-    } else {
-        console.log('Question non sélectionnée');
-        return null;
+    
+//afficher le contenu du test crée par l'utilisateur
+function afficherTest(Test){
+    if (Test.length != 0){
+        console.log('Votre test : \n')
+        afficherAllQuestions(Test);
+    }else{
+        console.log('Aucune question dans votre test');
+        return false;
     }
 }
 
-function dansLeTest(index) {
-    return questionselectionnee.some((question) => question.index === index);
+//vérifier sir la question concernée est déjà présente dans le test
+//ajouter à la table Test la question d'index précisé par l'utilisateur
+function selectionnerQuestion(Questions, Test, index){
+    if (index > 0 && index <= Questions.length){
+        let already = false;
+        Test.forEach((parsedQuestion) => {
+            if (parsedQuestion === Questions[index-1]) {
+                already = true;
+            }
+        })
+        if (already === true){
+            console.log(`La question ${index} est déjà dans votre test`);
+            return false;
+        }else{
+            Test.push(Questions[index-1]);
+        console.log(`La question ${index} a été ajoutée à votre test`);
+        }
+    }else{
+        console.log('Index invalide');
+        return false;
+    }
 }
 
-// Exportez les méthodes pour pouvoir les utiliser dans d'autres fichiers
+//supprimer du test la question d'index précisé par l'utilisateur
+//l'index spécifié est l'index dans le test != l'index dans la liste de question
+function deselectionnerQuestion(Test, index){
+    if (index > 0 && index <= Test.length){
+        Test.splice(index-1, 1);
+        console.log(`La question ${index} a été supprimée de votre test`);
+    }else{
+        console.log('Index invalide');
+        return false;
+    }
+}
+
+function statistiques(Test){
+    let Values = [];
+    Test.forEach((parsedQuestion) => {
+        Values.push({
+            type: parsedQuestion.typeQuestion,
+            count: 1,
+        });
+    })
+    const spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "data": {
+            "values" : Values
+        },
+        "mark": "bar",
+        "encoding": {
+            "x": {"field": "type", "type": "nominal"},
+            "y": {"field": "count", "type": "quantitative", "aggregate": "count"}
+        }
+    };
+    const runtime = vega.parse(spec);
+    const view = new vega.View(runtime, { renderer: 'none' })
+        .initialize()
+        .hover()
+        .run();
+    view.toSVG()
+        .then(svg => {
+            fs.writeFileSync('histogram.svg', svg);
+            console.log('L\'histogramme a été enregistré avec succès dans le fichier "histogram.svg".');
+        })
+        .catch(error => console.error(error));
+}
+
+// Exportez les fonctions pour pouvoir les utiliser dans d'autres fichiers
 module.exports = {
     importerQuestions,
-    afficherQuestions,
+    afficherAllQuestions,
     afficherQuestion,
+    afficherTest,
     selectionnerQuestion,
     deselectionnerQuestion,
-    dansLeTest,
-    questionselectionnee
+    statistiques
 };
-
-
-/*METHODES
-
-class Question {
-    static afficher(questions, index) {
-        if (index >= 0 && index < questions.length) {
-            const question = questions[index];
-            console.log(`Titre : ${question.title}`);
-            console.log(`Format : ${question.format}`);
-            console.log(`Texte : ${question.text}`);
-            console.log(`Réponses : ${question.answers.join(', ')}`);
-            console.log(`Type de question : ${question.typeofQuestion()}`);
-        } else {
-            console.log('Index de question invalide.');
-        }
-    }
-
-    afficherliste(){
-
-    }
-}
-
-class QCM {
-    afficherQCM() {
-        this.questions.forEach((question, index) => {
-            console.log(`Question ${index + 1}:`);
-            Question.afficher(this.questions, index);
-            console.log();
-        });
-    }
-    
-    // Vérifiez si la question à l'index spécifié est déjà dans la liste questionselectionnee
-    questionDejaSelectionnee(index) {
-        return this.questionselectionnee.some(question => question.title === this.questions[index].title);
-    }
-
-    selectionnerQuestion(index) {
-        if (index >= 0 && index < this.questions.length) {
-            if (!this.questionDejaSelectionnee(index)) {
-                const selectedQuestion = new Question(
-                    this.questions[index].title,
-                    this.questions[index].format,
-                    this.questions[index].text,
-                    []
-                );
-                selectedQuestion.typeQuestion = this.questions[index].typeofQuestion();
-                this.questionselectionnee.push(selectedQuestion);
-                console.log(`Question ${index + 1} sélectionnée et ajoutée à la liste.`);
-            } else {
-                console.log(`La question à l'index ${index + 1} est déjà sélectionnée dans le test.`);
-            }
-        } else {
-            console.log('Index invalide. Veuillez spécifier un index valide.');
-        }
-    }
-
-    deselectionnerQuestion(index) {
-        if (!this.questionDejaSelectionnee(index)) {
-            console.log(`La question à l'index ${index + 1} n'est pas présente dans la liste.`);
-            return null;
-        } else if (index >= 0 && index < this.questionselectionnee.length) {
-            const deselectedQuestion = this.questionselectionnee.splice(index, 1)[0];
-            console.log(`Question ${index + 1} désélectionnée et retirée de la liste.`);
-            return deselectedQuestion;
-        } else {
-            console.log('Index invalide. Veuillez spécifier un index valide.');
-            return null;
-        }
-    }
-
-    passerQCM() {
-        //librairie pour afficher sur le terminal
-        const readline = require('readline');
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        });
-        //QCM
-        const questionsSelectionnees = [];
-        const reponsesDonnees = [];
-        function poserQuestion(index) {
-            if (index < questionsSelectionnees.length) {
-                const question = questionsSelectionnees[index];
-                console.log(`Question ${index + 1}: ${question.text}`);
-                question.answers.forEach((reponse, i) => {
-                    console.log(`${i + 1}. ${reponse}`);
-                });
-                rl.question('Votre réponse : ', (reponseUtilisateur) => {
-                    reponsesDonnees.push({
-                        question: question.text,
-                        reponse: reponseUtilisateur
-                    });
-                    poserQuestion(index + 1);
-                });
-            } else {
-                console.log('QCM terminé. Réponses données :');
-                reponsesDonnees.forEach((reponse, i) => {
-                    console.log(`${i + 1}. Question: ${reponse.question}, Réponse: ${reponse.reponse}`);
-                });e
-                rl.close();
-            }
-        }
-        poserQuestion(0);
-    }
-}*/
 
 
