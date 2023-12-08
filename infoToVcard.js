@@ -3,6 +3,9 @@
 
 //------------------------------------------------------------------------------------------------
 //Vient demander des informations à l'utilisateur et crée un fichier Vcard à partir de ces infos
+//
+// paramètres d'entrée : userID = nom de l'utilisateur
+// paramètres d'entrée : void
 //------------------------------------------------------------------------------------------------
 
 
@@ -11,7 +14,7 @@ var readlineSync = require('readline-sync');
 const fs = require("fs");
 
 
-const infoToVcard = () => {
+const infoToVcard = (userID) => {
 
 
 var vcardDictionnary = {
@@ -242,7 +245,7 @@ var vcardDictionnary = {
 
 
   //On crée le fichier vcard
-  fs.writeFile('output.vcf', vcardString, (err) => {
+  fs.writeFile('user_' + userID + '.vcf', vcardString, (err) => {
     if (err) throw err;
    });
 

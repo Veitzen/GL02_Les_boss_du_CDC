@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:4.0
+N:1;1;;;
+FN: 1 1
+ORG:
+TITLE:
+PHOTO;MEDIATYPE=image/gif:
+TEL;TYPE=work,voice;VALUE=uri:tel:
+TEL;TYPE=home,voice;VALUE=uri:tel:1
+ADR;TYPE=WORK;PREF=1;LABEL="\n\n,  \n":;;;;;;
+ADR;TYPE=HOME;LABEL="\n\n,  \n":;;;;;;
+EMAIL:1
+REV:20231208F112422Z
+x-qq:21588891
+END:VCARD

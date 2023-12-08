@@ -5,6 +5,10 @@
 //---------------------------------------------------------------------------
 //Vient proposer à l'utilisateur de se Login ou de se Register
 //Si utilisateur est bien login : isIdentified = true, enteredID = 'Nom de l'utilisateur'
+//
+//parametres entrée : void
+//parametres sortie : whoIsUser[0] = type d'utilisateur entre Admin et Enseignant
+// ---------------- : whoIsUser[1] = nom de l'utilisateur
 //---------------------------------------------------------------------------
 
 
@@ -24,8 +28,9 @@ function connexionWindow() {
         console.log(' -------------------------------------------------------------------------------------------------');
 }
 
-let whoIsUser = '';
+let whoIsUser = ['', ''];
 let isIdentified = false;
+let enteredID = '';
 
 connexionWindow();
 choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de choisir
@@ -42,11 +47,10 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                 //Si user est un enseignant
 
                 //On lit d'abord le fichier avec les mots de passe / usernames
-                fs.readFile('userLogins.txt', 'utf-8', function read(err, data) {
-                        if (err) {
-                            throw err;
-                        }
-                        const allUserLoginInfos = data;
+
+
+                    const allUserLoginInfos = fs.readFileSync('userLogins.txt',
+                    { encoding: 'utf8', flag: 'r' });
                     
                     //On transforme le string obtenu en tableau 
                     const tab_allUserLoginInfos = allUserLoginInfos.split("\r\n");
@@ -55,7 +59,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                     
                     while (isIdentified == false){
                         //On demande maintenant à l'utilisateur son login et mot de passe
-                        var enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
+                        enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
                         var enteredPASSWORD = readlineSync.question("Entrez votre mot de passe : ");
 
                         for (let i = 0; i< tab_allUserLoginInfos.length; i++){
@@ -71,19 +75,18 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                             console.log('Utilisateur ou mot de passe erroné. Veuillez recommencer.');
                         }
                     }
-                    });
+                  
 
-                    whoIsUser = 'Enseignant';
+                    whoIsUser[0] = 'Enseignant';
+                    whoIsUser[1] = enteredID;
 
                 } else if (choixTypeUser == 2){
 
                     //Si user est un admin
                     //On lit d'abord le fichier avec les mots de passe / usernames
-                    fs.readFile('adminLogins.txt', 'utf-8', function read(err, data) {
-                        if (err) {
-                            throw err;
-                        }
-                        const allUserLoginInfos = data;
+
+                    const allUserLoginInfos = fs.readFileSync('adminLogins.txt',
+                    { encoding: 'utf8', flag: 'r' });
                     
                     //On transforme le string obtenu en tableau 
                     const tab_allUserLoginInfos = allUserLoginInfos.split("\r\n");
@@ -92,7 +95,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                     
                     while (isIdentified == false){
                         //On demande maintenant à l'utilisateur son login et mot de passe
-                        var enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
+                        enteredID = readlineSync.question("Entrez votre nom d'utilisateur : ");
                         var enteredPASSWORD = readlineSync.question("Entrez votre mot de passe : ");
 
                         for (let i = 0; i< tab_allUserLoginInfos.length; i++){
@@ -108,9 +111,10 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                             console.log('Utilisateur ou mot de passe erroné. Veuillez recommencer.');
                         }
                     }
-                    });
+                    
 
-                    whoIsUser = 'Admin';                   
+                    whoIsUser[0] = 'Admin';   
+                    whoIsUser[1] = enteredID;                
                 }
 
         
