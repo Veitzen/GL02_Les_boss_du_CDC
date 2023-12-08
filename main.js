@@ -7,5 +7,4 @@ const cheminGroupe = '../Groupe'
 //const tabQuestions = d.importerQuestions(chemin);
 //q.afficherAllQuestions(tabQuestions);
 
-const questionsAllFichiers = d.questionsDossiers(cheminGroupe);
-console.log(questionsAllFichiers);
+d.comparerTest(chemin, cheminGroupe);

@@ -35,32 +35,52 @@ function questionsDossiers(cheminDossier){
     return questionsAllFichiers;
 }
 
-function nombreTypeQuestion(Questions){
+function TypeQuestion(Questions){
     let countType = [
         ['Description', 0],
         ['ChoixMultiple',0],
         ['Appariement', 0],
-        ['ReponseCourte',0],
+        ['ReponseCourte', 0],
         ['VraiFaux', 0],
-        ['ReponseNumerique',0]
+        ['ReponseNumerique', 0],
+        ['ReponseNumeriqueMultiple', 0],
+        ['Composition', 0]
        ];
     Questions.forEach((question) => {
-        countType.forEach((index) => {
-            
-        })
+        countType.forEach((type) => {
+            if (question.typeQuestion === type[0]) {
+                type[1]++;
+            }
+        });
     })
+    const repartType = pourcentageType(countType, Questions);
+    return repartType;
+}
+
+function pourcentageType(repartType, Questions){
+    repartType.forEach((type) => {
+        const pourcentage = (type[1] * 100) / Questions.length;
+        type[2] = parseFloat(pourcentage.toFixed(1));
+    });
+    return repartType;
 }
 
 function comparerTest(cheminTest, cheminGroupe){
     const testAComparer = importerQuestions(cheminTest); //questions du test
     const groupeAComparer = questionsDossiers(cheminGroupe); //questions du dossier
-
+    const repartTest = TypeQuestion(testAComparer); //repartition des questions dans le test
+    const repartGroupe = TypeQuestion(groupeAComparer); //repartition des questions dans le groupe
+    console.log('Voici une comparaison de la répartitions des types de questions dans votre test avec le dossier de test choisi \n');
+    repartTest.forEach((type, index) => {
+        console.log(`${type[0]} : votre test -> ${type[2]} // ${repartGroupe[index][2]}`);
+    })
 }
 
 module.exports = {
     importerQuestions, 
     obtenirFichiers,
     questionsDossiers,
-    nombreTypeQuestion,
+    TypeQuestion,
+    pourcentageType,
     comparerTest,
 }
