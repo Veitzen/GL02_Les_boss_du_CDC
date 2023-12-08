@@ -4,13 +4,25 @@ const {Question} = require('./qcm');
 const {QCM} = require('./qcm');
 const vega = require('vega');
 const vegalite = require('vega-lite');
+const { forEach } = require('vega-lite/build/src/encoding');
+const path = require('path');
 
 
 //importer les questions depuis les fichiers à l'aide du parser
 //retourner un tableau de class Question
+//fonction utilisée pour l'exemple
 function importerQuestions(){
     const parser = new Parser();
     let data = fs.readFileSync('GIFT-examples.gift', 'utf8');
+        parser.parse(data);
+        let results = parser.parsedQuestions;
+        return results;
+}
+
+//fonction avec en argument le chemin du fichier à importer
+function importerQuestions(chemin){
+    const parser = new Parser();
+    let data = fs.readFileSync(chemin, 'utf8');
         parser.parse(data);
         let results = parser.parsedQuestions;
         return results;
@@ -79,6 +91,51 @@ function deselectionnerQuestion(Test, index){
     }
 }
 
+function lireTest(fichier){
+    let test = importerQuestions(fichier);
+    return test;
+}
+
+function lireDossier(dossier){
+    const cheminDossier = path.join(__dirname, '..', dossier);
+    let valide = estUnDossier(cheminossier);
+    if (valide) {
+        const ensembleDeQuestions = [];
+
+    } else {
+        console.log('Le chemin d\'accès n\'est pas un dossier ou n\'existe pas.');
+    }
+}
+
+async function parcourirDossierAsync(dossier) {
+    try {
+        const fichiers = await fs.readdir(dossier);
+        const fichiersGift = fichiers.filter(fichier => path.extname(fichier) === '.gift');
+        const fichiersDossier = [];
+        fichiersGift.forEach(async fichier => {
+            fichiersDossier.push(path.join(dossier, fichier))
+            console.log(path.join(dossier, fichier));
+        });
+        return fichiersDossier;
+    } catch (erreur) {
+        console.error('Erreur lors du parcours du dossier :', erreur);
+    }
+}
+
+
+function estUnDossier(chemin) {
+    try {
+        const stats = fs.statSync(chemin);
+        return stats.isDirectory();
+    } catch (error) {
+        console.error('Erreur lors de la vérification du dossier :', error);
+        return false;
+    }
+}
+
+
+//afficher les statistiques d'un test
+//enregistre un histogramme avec la répartition des types de question dans le test
 function statistiques(Test){
     let Values = [];
     Test.forEach((parsedQuestion) => {
@@ -89,6 +146,7 @@ function statistiques(Test){
     })
     const spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "title":"Répartition des types de questions dans votre test",
         "data": {
             "values" : Values
         },
@@ -96,6 +154,8 @@ function statistiques(Test){
         "encoding": {
             "x": {"field": "type", "type": "nominal"},
             "y": {"field": "count", "type": "quantitative"},
+            "size": {"value": 20},
+            "color": {"value": "#8C466F "}
         },
     };
 
@@ -106,10 +166,12 @@ function statistiques(Test){
         mySvg.then(svg => {
             fs.writeFileSync('histogram.svg', svg);
             view.finalize();
-            console.log('L\'histogramme a été enregistré avec succès dans le fichier "histogram.svg".');
+            console.log('L\'histogramme a été enregistré avec succès dans le fichier "histogram.svg". \n');
         })
         .catch(error => console.error(error));
 }
+
+
 
 // Exportez les fonctions pour pouvoir les utiliser dans d'autres fichiers
 module.exports = {
@@ -119,6 +181,9 @@ module.exports = {
     afficherTest,
     selectionnerQuestion,
     deselectionnerQuestion,
+    lireTest,
+    lireDossier,
+    parcourirDossierAsync,
     statistiques
 };
 
