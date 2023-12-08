@@ -107,7 +107,7 @@ class Question {
                         let expectedMatch = seperateArray[1].replace(/\#[^(\~|\}|\=)]{1,}/gm, "").trim();
                         this.goodAnswers.push({ question: question, expectedMatch: expectedMatch, retroaction: retroaction });
                     } else {
-                        this.goodAnswers.push({ question: answer.split("->")[0].trim(), answer: answer.split("->")[1].trim() });
+                        this.goodAnswers.push({ question: answer.split("->")[0].trim(), expectedMatch : answer.split("->")[1].trim() });
                     }
                 });
                 break;
@@ -279,37 +279,53 @@ class Question {
                     this.goodAnswers = { answer: answer };
                 }
                 break;
+                case "MotManquant":
+                    this.goodAnswers = [];
+                    this.answerString.map(answer => {
+                        // Si il y a une rétroaction
+                        if (answer.includes("#")) {
+                            let answerString = answer.match(/\=[^(\~|\}|\#)]{1,}/gm, "")[0].replace("=", "").trim();
+                            let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                            let answerObject = { answer: answerString, retroaction: retroaction };
+                            this.goodAnswers.push(answerObject);
+                        } else {
+                            let answerString = answer.match(/\=[^(\~|\}|\#)]{1,}/gm, "")[0].replace("=", "").trim();
+                            let answerObject = { answer: answerString };
+                            this.goodAnswers.push(answerObject);
+                        }
+                    });
             default:
                 break;
         }
     }
 
-    possibleAnswers() {
+    findPossibleAnswers() {
+        let otherAnswers;
         switch (this.typeofQuestion()) {
             case "VraiFaux":
                 this.possibleAnswers = ["T", "F"];
                 break;
+            case "ChoixMultiple":
+                this.possibleAnswers = [];
+                otherAnswers = this.answerString[0].match(/(\~|\=)[^(\~|\=|\}|\#)]{1,}/gm);
+                otherAnswers.map(answer => {
+                    answer = answer.replace(/\%(-|)\d*\%/g, "").replace(/\#[^(\~|\}|\=)]{1,}/gm, "");
+                    this.possibleAnswers.push(answer.replace("~", "").replace("=", "").trim());
+                });
+                break;
             case "Appariement":
                 this.possibleAnswers = [];
                 this.goodAnswers.map(answer => {
-                    this.possibleAnswers.push(answer.answer);
+                    this.possibleAnswers.push(answer.expectedMatch);
                 });
-                break;
-            case "ChoixMultiple":
-                this.possibleAnswers = [];
-                if (this.typeofQuestion() == "ChoixMultiple") {
-                    this.goodAnswers.map(answer => {
-                        this.possibleAnswers.push(answer.answer);
-                    });
-                }
-                break;
+                break;    
         }
     }
 
     feedback() {
         for (let i = 0; i < this.answerString.length; i++) {
             if (this.answerString[i].includes("SYMBOL6") == true) {
-                this.feedback = this.answerString[i].split("SYMBOL6")[1].replace("}", "").trim();
+                this.feedback = this.specialSymbolsRevert(this.answerString[i].split("SYMBOL6")[1].replace("}", "").trim());
             }
         }
     }
@@ -323,16 +339,11 @@ class Question {
     }
 
     analyseText() {
+        this.typeOfQuestion = this.typeofQuestion();
         this.feedback();
-        this.specialSymbolsRevert(this.text);
-        for (let i = 0; i < this.answerString.length; i++) {
-            this.specialSymbolsRevert(this.answerString[i]);
-        }
-        for (let i = 0; i < this.goodAnswer.length; i++) {
-            this.specialSymbolsRevert(this.goodAnswer[i]);
-        }
-        this.typeQuestion = this.typeofQuestion();
         this.goodAnswer();
+        this.findPossibleAnswers();
+        this.specialSymbolsRevert(this.text);
     }
 }
 
@@ -343,6 +354,17 @@ class QCM {
     questions = [];
     constructor(questions) {
         this.questions = questions;
+    }
+
+    afficherQuestion(){
+        this.questions.map((question, index) => {
+            let stringToDisplay = "----- Question n°" + (index+1) + " : " + question.title + "------";
+            stringToDisplay+= "\nFormat : " + question.format;
+            stringToDisplay+= "\nType de question : " + question.typeOfQuestion;
+            stringToDisplay+= "\nTexte : " + question.text;
+            question.possibleAnswers != undefined ? stringToDisplay+= "\nRéponses possibles : " + question.possibleAnswers : "";
+            console.log(stringToDisplay);
+        })
     }
 }
 

@@ -1,4 +1,5 @@
 const { Question } = require('./qcm.js');
+const { QCM } = require('./qcm.js');
 
 // Définition de la classe parser à utiliser
 class Parser {
@@ -65,15 +66,15 @@ class Parser {
                 this.getComment(tData[i]);
             } else if (tData[i] === ''){
             } else{
-                let question = new Question(this.getTitle(tData[i]), this.format(tData[i]), "", []);
+                let question = new Question(this.getTitle(tData[i]), this.getFormat(tData[i]), "", []);
                 while(tData[i] != '' && i<tData.length){
                         if(this.getAnswerString(tData[i]) != undefined){
                             question.answerString = question.answerString.concat(this.getAnswerString(tData[i]));
                         }
                         if(question.text == ''){
-                            question.text = this.text(tData[i]);
+                            question.text = this.getText(tData[i]);
                         } else {
-                            question.text += "\n" + this.text(tData[i]);
+                            question.text += "\n" + this.getText(tData[i]);
                         }
                         i++;
                 }
@@ -118,13 +119,11 @@ class Parser {
     }
 
     // Format : [(html / markdown / plain / moodle)] ; par défaut c'est moodle
-    format(line){
+    getFormat(line){
         if(line.includes("[")){
-            let toCheckData = line.split("[")[1];
-            if(toCheckData.includes("]")){
+            if(line.includes("]")){
                 // On récupère le format
-                console.log(toCheckData.split("]")[0]);
-                return toCheckData.split("]")[0];
+                return line.match(/\[.*\]/gm)[0].slice(1,-1);
             } else{
                 this.errMsg("Question must be between with []", line);
             }
@@ -135,10 +134,13 @@ class Parser {
     }
 
     // Text : *(VCHAR / WSP) \n ; ce qui est en dehors des crochets
-    text(line){
+    getText(line){
         let text = line;
         if(line.includes("::")){ 
             text = line.replace("::"+this.getTitle(line)+"::", "");
+        }
+        if(line.includes("[") && line.includes("]")){
+            text = text.replace(/\[.*\]/gm, "");
         }
         let answers = this.getAnswerString(line);
         if(answers == undefined){
@@ -172,7 +174,7 @@ class Parser {
 }
 
 let fs = require('fs');
-fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
+fs.readFile('questions_data/Autre/GIFT-examples.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
@@ -182,5 +184,6 @@ fs.readFile('GIFT-examples.gift', 'utf8', function (err, data) {
         console.log("The .gift file contains error");
     }
     parser.parse(data);
-    console.log(parser.parsedQuestions[0].goodAnswers.answer);
+    let qcm = new QCM(parser.parsedQuestions);
+    qcm.afficherQuestion();
 });
