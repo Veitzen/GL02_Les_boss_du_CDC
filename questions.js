@@ -98,7 +98,7 @@ function deselectionnerQuestion(Test, index){
 
 function lireDossier(dossier){
     const cheminDossier = path.join(__dirname, '..', dossier);
-    let valide = estUnDossier(cheminossier);
+    let valide = estUnDossier(chemindossier);
     if (valide) {
         const ensembleDeQuestions = [];
 
