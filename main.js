@@ -6,6 +6,8 @@ var fs = require('fs');
 var { QCM } = require('./qcm.js');
 var colors = require('colors');
 var infoToVcard = require('./infoToVcard.js');
+var {comparerTest} = require('./dossier.js');
+var {statistiques} = require('./questions.js');
 
 isConneted = false;
 while (true) {
@@ -24,11 +26,14 @@ while (true) {
     }
     if (importQuestions == undefined) {
         var importQuestions = new QCM([]);
+        var path = "";
     }
     if (importQuestions.questions.length == 0) {
         let choix = readlineSync.keyInSelect(['Parcourir la banque de question', 'Quitter', 'Exporter VCARD'], 'Que souhaitez-vous faire ?');
         if (choix === 0) {
-            importQuestions = parcourirBanqueQuestion();
+            let results = parcourirBanqueQuestion();
+            importQuestions = results.f;
+            path = results.d;
         } else if (choix === 1) {
             infoToVcard(whoIsUser);
             break; // Quitter le programme
@@ -40,7 +45,7 @@ while (true) {
         let choix = readlineSync.keyInSelect(possibleCommands, 'Que souhaitez-vous faire ?');
 
         if (choix === 0) {
-            importQuestions = parcourirBanqueQuestion();
+            importQuestions, path = parcourirBanqueQuestion();
         } else
             if (choix === 1) {
                 while (true) {
@@ -84,10 +89,11 @@ while (true) {
                 infoToVcard(whoIsUser);
             }
             else if (choix === 7) {
-                break; // Quitter le programme
+                statistiques(test.questions);
             }
             else if (choix === 8) {
-                break; // Quitter le programme
+                let folderPath = path.replace(/[^\/]{1,}$/gm, "")
+                comparerTest(path, folderPath);
             }
             else if (choix === 9) {
                 break; // Quitter le programme
@@ -119,7 +125,7 @@ function parcourirBanqueQuestion() {
     importQuestions = new QCM(parser.parsedQuestions);
     console.log("Voici les questions importées :");
     importQuestions.afficherToutesQuestions();
-    return importQuestions;
+    return { f: importQuestions, d :path};
 }
 
 function questionSelection(parsedQuestions, test, numeroQuestion, action) {

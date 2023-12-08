@@ -1,0 +1,14 @@
+::Grant is <Answer> in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
+
+::Matching Question. <Answer>::Matching Question. { =subquestion1 -> subanswer1 =subquestion2 -> subanswer2 =subquestion3 -> subanswer3 }
+
+::Match the following countries with their corresponding capitals. <Answer>::Match the following countries with their corresponding capitals. { =Canada -> Ottawa =Italy -> Rome =Japan -> Tokyo =India -> New Delhi#J'ai une rétroaction }
+
+::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{ =no one#excellent answer! =nobody#excellent answer!}
+
+::When was Ulysses S. Grant born?<Answer>::When was Ulysses S. Grant born?{#1822:5}
+
+::Grant is buried in Grant's tomb.<Answer>::Grant is buried in Grant's tomb.{FALSE}
+
+::The American holiday of Thanksgiving is celebrated on the <Answer> Thursday of November.::The American holiday of Thanksgiving is celebrated on the <Answer> Thursday of November.{ ~second ~third =fourth }
+
