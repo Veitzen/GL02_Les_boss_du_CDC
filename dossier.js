@@ -1,12 +1,10 @@
 const fs = require('fs');
 const {Parser} = require('./parser');
-const {Question} = require('./qcm');
-const {QCM} = require('./qcm');
-const vega = require('vega');
 const vegalite = require('vega-lite');
 const path = require('path');
 
 //fonction avec en argument le chemin du fichier à importer
+//meme fonction que dans question.js
 function importerQuestions(chemin){
     const parser = new Parser();
     let data = fs.readFileSync(chemin, 'utf8');
@@ -15,6 +13,7 @@ function importerQuestions(chemin){
         return results;
 }
 
+//avec le chemin du dossier, retourne un tableau des noms des fichiers contenus dans le dossier
 function obtenirFichiers(cheminDossier) {
     try {
         const nomsFichiers = fs.readdirSync(cheminDossier);
@@ -25,6 +24,7 @@ function obtenirFichiers(cheminDossier) {
     }
 }
 
+//avec le tableau des noms des fichiers, parcourt chacun des fichiers et mets les questions dans un tableau
 function questionsDossiers(cheminDossier){
     let questionsAllFichiers = [];
     const nomsFichiers = obtenirFichiers(cheminDossier);
@@ -35,7 +35,8 @@ function questionsDossiers(cheminDossier){
     return questionsAllFichiers;
 }
 
-function TypeQuestion(Questions){
+//à partir d'un tableau de question (test ou issu d'un dossier) retourne un tableau avec le nombre et pourcentage de question pour chaque type
+function typeQuestion(Questions){
     let countType = [
         ['Description', 0],
         ['ChoixMultiple',0],
@@ -57,6 +58,7 @@ function TypeQuestion(Questions){
     return repartType;
 }
 
+//appelée par la fonction typeQuestion, permet de remplir la colonne pourcentage
 function pourcentageType(repartType, Questions){
     repartType.forEach((type) => {
         const pourcentage = (type[1] * 100) / Questions.length;
@@ -65,22 +67,18 @@ function pourcentageType(repartType, Questions){
     return repartType;
 }
 
+//dernière fonction, permet de comparer un test et un dossier de fichiers de questions à partir de leurs chemins d'accès
 function comparerTest(cheminTest, cheminGroupe){
     const testAComparer = importerQuestions(cheminTest); //questions du test
     const groupeAComparer = questionsDossiers(cheminGroupe); //questions du dossier
-    const repartTest = TypeQuestion(testAComparer); //repartition des questions dans le test
-    const repartGroupe = TypeQuestion(groupeAComparer); //repartition des questions dans le groupe
+    const repartTest = typeQuestion(testAComparer); //repartition des questions dans le test
+    const repartGroupe = typeQuestion(groupeAComparer); //repartition des questions dans le groupe
     console.log('Voici une comparaison de la répartitions des types de questions dans votre test avec le dossier de test choisi \n');
     repartTest.forEach((type, index) => {
-        console.log(`${type[0]} : votre test -> ${type[2]}% // ${repartGroupe[index][2]}%`);
+        console.log(`${type[0]} : votre test -> ${type[2]}% // ${repartGroupe[index][2]}% \n`);
     })
 }
 
 module.exports = {
-    importerQuestions, 
-    obtenirFichiers,
-    questionsDossiers,
-    TypeQuestion,
-    pourcentageType,
     comparerTest,
 }
