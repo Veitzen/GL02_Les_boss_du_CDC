@@ -49,7 +49,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                 //On lit d'abord le fichier avec les mots de passe / usernames
 
 
-                    const allUserLoginInfos = fs.readFileSync('userLogins.txt',
+                    const allUserLoginInfos = fs.readFileSync('./loginFile/userLogins.txt',
                     { encoding: 'utf8', flag: 'r' });
                     
                     //On transforme le string obtenu en tableau 
@@ -85,7 +85,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
                     //Si user est un admin
                     //On lit d'abord le fichier avec les mots de passe / usernames
 
-                    const allUserLoginInfos = fs.readFileSync('adminLogins.txt',
+                    const allUserLoginInfos = fs.readFileSync('./loginFile/adminLogins.txt',
                     { encoding: 'utf8', flag: 'r' });
                     
                     //On transforme le string obtenu en tableau 
@@ -144,7 +144,7 @@ choisir: while (true) {     //Tant que le choix n'est pas bon, on redemande de c
         var userLoginInfos = '\nUsername:' + userName + '-Password:' + password;    
         
         //On injecte dans le fichier
-        fs.appendFile('userLogins.txt', userLoginInfos, err => {
+        fs.appendFile('./loginFile/userLogins.txt', userLoginInfos, err => {
             if (err) {
               console.log("Erreur");
             } else {
