@@ -20,13 +20,13 @@ function importerQuestions(){
 }
 
 //fonction avec en argument le chemin du fichier à importer
-function importerQuestions(chemin){
+/*function importerQuestions(chemin){
     const parser = new Parser();
     let data = fs.readFileSync(chemin, 'utf8');
         parser.parse(data);
         let results = parser.parsedQuestions;
         return results;
-}
+}*/
 
 //parcourir le tableau des class Question et afficher l'index et le contenu de chaque question
 function afficherAllQuestions(Questions) {
@@ -91,7 +91,7 @@ function deselectionnerQuestion(Test, index){
     }
 }
 
-function lireTest(fichier){
+/*function lireTest(fichier){
     let test = importerQuestions(fichier);
     return test;
 }
@@ -131,7 +131,7 @@ function estUnDossier(chemin) {
         console.error('Erreur lors de la vérification du dossier :', error);
         return false;
     }
-}
+}*/
 
 
 //afficher les statistiques d'un test
@@ -181,9 +181,9 @@ module.exports = {
     afficherTest,
     selectionnerQuestion,
     deselectionnerQuestion,
-    lireTest,
-    lireDossier,
-    parcourirDossierAsync,
+    //lireTest,
+    //lireDossier,
+    //parcourirDossierAsync,
     statistiques
 };
 
