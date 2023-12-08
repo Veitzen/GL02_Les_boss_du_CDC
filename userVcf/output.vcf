@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:4.0
+N:Delhomme;Louis;;;
+FN: Louis Delhomme
+ORG:
+TITLE:
+PHOTO;MEDIATYPE=image/gif:
+TEL;TYPE=work,voice;VALUE=uri:tel:
+TEL;TYPE=home,voice;VALUE=uri:tel:0645636955
+ADR;TYPE=WORK;PREF=1;LABEL="\n\n,  \n":;;;;;;
+ADR;TYPE=HOME;LABEL="\n\n,  \n":;;;;;;
+EMAIL:louis.1551@gmail.com
+REV:20231207T184814Z
+x-qq:21588891
+END:VCARD

@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "chevrotain": "^11.0.3",
+    "colors": "^1.4.0",
+    "fs": "^0.0.1-security",
+    "readline-sync": "^1.4.10",
+    "vega": "^5.26.1",
+    "vega-lite": "^5.16.3"
+  }
+}
