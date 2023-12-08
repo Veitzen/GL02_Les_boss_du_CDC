@@ -15,43 +15,52 @@ function importerQuestions(chemin){
         return results;
 }
 
-function lireTest(fichier){
-    let test = importerQuestions(fichier);
-    return test;
-}
-
-function lireDossier(dossier){
-    const cheminDossier = path.join(__dirname, '..', dossier);
-    let valide = estUnDossier(chemindossier);
-    if (valide) {
-        const ensembleDeQuestions = [];
-
-    } else {
-        console.log('Le chemin d\'accès n\'est pas un dossier ou n\'existe pas.');
-    }
-}
-
-async function parcourirDossierAsync(dossier) {
+function obtenirFichiers(cheminDossier) {
     try {
-        const fichiers = await fs.readdir(dossier);
-        const fichiersGift = fichiers.filter(fichier => path.extname(fichier) === '.gift');
-        const fichiersDossier = [];
-        fichiersGift.forEach(async fichier => {
-            fichiersDossier.push(path.join(dossier, fichier))
-            console.log(path.join(dossier, fichier));
-        });
-        return fichiersDossier;
+        const nomsFichiers = fs.readdirSync(cheminDossier);
+        return nomsFichiers;
     } catch (erreur) {
-        console.error('Erreur lors du parcours du dossier :', erreur);
+        console.error('Erreur lors de la récupération des noms de fichiers :', erreur.message);
+        return [];
     }
 }
 
-function estUnDossier(chemin) {
-    try {
-        const stats = fs.statSync(chemin);
-        return stats.isDirectory();
-    } catch (error) {
-        console.error('Erreur lors de la vérification du dossier :', error);
-        return false;
-    }
+function questionsDossiers(cheminDossier){
+    let questionsAllFichiers = [];
+    const nomsFichiers = obtenirFichiers(cheminDossier);
+    nomsFichiers.forEach ((fichier) => {
+        const questionOneFichier = importerQuestions('../Groupe/' + fichier);
+        questionsAllFichiers = questionsAllFichiers.concat(questionOneFichier);
+    });
+    return questionsAllFichiers;
+}
+
+function nombreTypeQuestion(Questions){
+    let countType = [
+        ['Description', 0],
+        ['ChoixMultiple',0],
+        ['Appariement', 0],
+        ['ReponseCourte',0],
+        ['VraiFaux', 0],
+        ['ReponseNumerique',0]
+       ];
+    Questions.forEach((question) => {
+        countType.forEach((index) => {
+            
+        })
+    })
+}
+
+function comparerTest(cheminTest, cheminGroupe){
+    const testAComparer = importerQuestions(cheminTest); //questions du test
+    const groupeAComparer = questionsDossiers(cheminGroupe); //questions du dossier
+
+}
+
+module.exports = {
+    importerQuestions, 
+    obtenirFichiers,
+    questionsDossiers,
+    nombreTypeQuestion,
+    comparerTest,
 }
