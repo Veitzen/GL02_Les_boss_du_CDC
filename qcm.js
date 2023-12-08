@@ -324,10 +324,10 @@ class Question {
         }
     }
 
-    feedback() {
+    getfeedback() {
         for (let i = 0; i < this.answerString.length; i++) {
             if (this.answerString[i].includes("SYMBOL6") == true) {
-                this.feedback = this.specialSymbolsRevert(this.answerString[i].split("SYMBOL6")[1].replace("}", "").trim());
+                this.feedback = this.answerString[i].split("SYMBOL6")[1].replace("}", "").trim();
                 let string = "SYMBOL6" + this.feedback;
                 this.answerString[0] = this.answerString[0].replace(string, "");
             }
@@ -344,9 +344,8 @@ class Question {
 
     analyseText() {
         this.typeOfQuestion = this.typeofQuestion();
-        this.feedback();
+        this.getfeedback();
         this.goodAnswer();
-        console.log(this.title);
         this.specialSymbolsRevert(this.answerString[0])
         this.findPossibleAnswers();
         this.specialSymbolsRevert(this.text);
@@ -427,7 +426,9 @@ class QCM {
         let nbBonneRep = 0;
         let erreur = 0;
         let answer;
+        let answerArray;
         this.questions.map((question) => {
+            console.clear();
             this.afficherQuestion(question);
             switch (question.typeOfQuestion) {
                 case "VraiFaux":
@@ -491,23 +492,296 @@ class QCM {
                 case "Composition":
                     console.log("Il n'y a pas de bonne réponse pour ce type de question, elle doit être vérifiée manuellement");
                     break;
-                default:
-                    console.log(question.goodAnswers.answer)
-                    answer = readlineSync.question("Entrer une réponse :");
-                    if (answer == question.goodAnswers.answer) {
-                        if (question.hasOwnProperty("retroaction")) {
-                            console.log("Bonne réponse : " + question.retroaction);
+                case "ReponseNumerique":
+                    answer = readlineSync.question("Réponse : ");
+                    // Vérifier si la réponse est dans une marge
+                    if (question.goodAnswers.answer.constructor === Array) {
+                        if (answer >= question.goodAnswers.answer[0] && answer <= question.goodAnswers.answer[1]) {
+                            if (question.hasOwnProperty("retroaction")) {
+                                console.log("Bonne réponse : " + question.retroaction);
+                            }
+                            else {
+                                console.log("Bonne réponse!");
+                            }
+                            nbBonneRep++;
+                        } else {
+                            console.log("Mauvaise réponse");
+                            erreur++;
                         }
-                        else {
-                            console.log("Bonne réponse!");
-                        }
-                        nbBonneRep++;
                     } else {
-                        console.log("Mauvaise réponse");
-                        erreur++;
+                        if (answer == question.goodAnswers.answer) {
+                            if (question.hasOwnProperty("retroaction")) {
+                                console.log("Bonne réponse : " + question.retroaction);
+                            }
+                            else {
+                                console.log("Bonne réponse!");
+                            }
+                            nbBonneRep++;
+                        } else {
+                            console.log("Mauvaise réponse");
+                            erreur++;
+                        }
+                    }
+                    break;
+                case "ReponseNumeriqueMultiple":
+                    answer = readlineSync.question("Réponse : ");
+                    answerArray = question.goodAnswers;
+                    for (let i = 0; i < answerArray.length; i++) {
+                        if (answerArray[i].answer.constructor === Array) {
+                            if (answer >= answerArray[i][0] && answer <= answerArray[i][1]) {
+                                if (!(answerArray[i].hasOwnProperty("weight"))) {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                    }
+                                    else {
+                                        console.log("Bonne réponse!");
+                                    }
+                                    nbBonneRep++;
+                                    break;
+                                } else
+                                    if (answerArray[i].weight == 1) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Bonne réponse!");
+                                        }
+                                        nbBonneRep++;
+                                        break;
+                                    } else if (answerArray[i].weight > 0) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Réponse partiellement juste : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Réponse partiellement juste!");
+                                        }
+                                        nbBonneRep += answerArray[i].weight;
+                                        erreur++;
+                                        break;
+                                    } else if (answerArray[i].weight == 0) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Mauvaise réponse!");
+                                        }
+                                        erreur++;
+                                        break;
+                                    } else {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                        } else {
+                                            console.log("Mauvaise réponse!");
+                                        }
+                                        nbBonneRep += answerArray[i].weight;
+                                        erreur++;
+                                        break;
+                                    }
+                            }
+                        } else {
+                            if (answer == answerArray[i].answer) {
+                                if (!(answerArray[i].hasOwnProperty("weight"))) {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                    }
+                                    else {
+                                        console.log("Bonne réponse!");
+                                    }
+                                    nbBonneRep++;
+                                    break;
+                                } else
+                                    if (answerArray[i].weight == 1) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Bonne réponse!");
+                                        }
+                                        nbBonneRep++;
+                                        break;
+                                    } else if (answerArray[i].weight > 0) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Réponse partiellement juste : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Réponse partiellement juste!");
+                                        }
+                                        nbBonneRep += answerArray[i].weight;
+                                        erreur++;
+                                        break;
+                                    } else if (answerArray[i].weight == 0) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Mauvaise réponse!");
+                                        }
+                                        erreur++;
+                                        break;
+                                    } else {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                        } else {
+                                            console.log("Mauvaise réponse!");
+                                        }
+                                        nbBonneRep += answerArray[i].weight;
+                                        erreur++;
+                                        break;
+                                    }
+                            }
+                        }
+                        if (i == answerArray.length - 1) {
+                            console.log("Mauvaise réponse");
+                            erreur++;
+                        }
+                    }
+                    break;
+                case "ReponseCourte":
+                    answer = readlineSync.question("Réponse : ");
+                    answerArray = question.goodAnswers;
+                    for (let i = 0; i < answerArray.length; i++) {
+                        if (answer == answerArray[i].answer) {
+                            if (!(answerArray[i].hasOwnProperty("weight"))) {
+                                if (answerArray[i].hasOwnProperty("retroaction")) {
+                                    console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                }
+                                else {
+                                    console.log("Bonne réponse!");
+                                }
+                                nbBonneRep++;
+                                break;
+                            } else
+                                if (answerArray[i].weight == 1) {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                    }
+                                    else {
+                                        console.log("Bonne réponse!");
+                                    }
+                                    nbBonneRep++;
+                                    break;
+                                } else if (answerArray[i].weight > 0) {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Réponse partiellement juste : " + answerArray[i].retroaction);
+                                    }
+                                    else {
+                                        console.log("Réponse partiellement juste!");
+                                    }
+                                    nbBonneRep += answerArray[i].weight;
+                                    erreur++;
+                                    break;
+                                } else if (answerArray[i].weight == 0) {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                    }
+                                    else {
+                                        console.log("Mauvaise réponse!");
+                                    }
+                                    erreur++;
+                                    break;
+                                } else {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                    } else {
+                                        console.log("Mauvaise réponse!");
+                                    }
+                                    nbBonneRep += answerArray[i].weight;
+                                    erreur++;
+                                    break;
+                                }
+                        }
+                        if (i == answerArray.length - 1) {
+                            console.log("Mauvaise réponse");
+                            erreur++;
+                        }
+                    }
+                    break;
+                case "ChoixMultiple":
+                    answer = readlineSync.question("Réponse : ");
+                    answerArray = question.goodAnswers;
+                    if (answerArray.constructor === Array) {
+                        for (let i = 0; i < answerArray.length; i++) {
+                            if (answer == answerArray[i].answer) {
+                                if (!(answerArray[i].hasOwnProperty("weight"))) {
+                                    if (answerArray[i].hasOwnProperty("retroaction")) {
+                                        console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                    }
+                                    else {
+                                        console.log("Bonne réponse!");
+                                    }
+                                    nbBonneRep++;
+                                    break;
+                                } else
+                                    if (answerArray[i].weight == 1) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Bonne réponse : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Bonne réponse!");
+                                        }
+                                        nbBonneRep++;
+                                        break;
+                                    } else if (answerArray[i].weight > 0) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Réponse partiellement juste : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Réponse partiellement juste!");
+                                        }
+                                        nbBonneRep += answerArray[i].weight;
+                                        erreur++;
+                                        break;
+                                    } else if (answerArray[i].weight == 0) {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                        }
+                                        else {
+                                            console.log("Mauvaise réponse!");
+                                        }
+                                        erreur++;
+                                        break;
+                                    } else {
+                                        if (answerArray[i].hasOwnProperty("retroaction")) {
+                                            console.log("Mauvaise réponse : " + answerArray[i].retroaction);
+                                        } else {
+                                            console.log("Mauvaise réponse!");
+                                        }
+                                        nbBonneRep += answerArray[i].weight;
+                                        erreur++;
+                                        break;
+                                    }
+                            }
+                            if (i == answerArray.length - 1) {
+                                console.log("Mauvaise réponse");
+                                erreur++;
+                            }
+                        }
+                    } else {
+                        if (question.goodAnswers.answer == answer) {
+                            if (question.goodAnswer.hasOwnProperty("retroaction")) {
+                                console.log("Bonne réponse : " + question.goodAnswer.retroaction);
+                            } else {
+                                console.log("Bonne réponse!");
+                            }
+                            nbBonneRep++;
+                            break;
+                        } else {
+                            if (question.goodAnswer.hasOwnProperty("retroaction")) {
+                                console.log("Mauvaise réponse : " + question.goodAnswer.retroaction);
+                            } else {
+                                console.log("Mauvaise réponse!");
+                            }
+                            erreur++;
+                            break;
+                        }
                     }
                     break;
             }
+            if (question.hasOwnProperty("feedback")) {
+                console.log("Feedback : " + question.feedback);
+            }
+            console.log("--------------------------------------------------\nPasser à la question suivante ? (Appuyer sur entrée)");
+            readlineSync.question("");
         });
         console.log("Nombre de bonnes réponses : " + nbBonneRep + "/" + (nbBonneRep + erreur));
     }

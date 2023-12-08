@@ -186,6 +186,6 @@ fs.readFile('export.gift', 'utf8', function (err, data) {
     parser.parse(data);
     console.log(parser.parsedQuestions);
     let qcm = new QCM(parser.parsedQuestions);
-    // qcm.exporterFichier();
+    //qcm.exporterFichier();
     qcm.passerTest();
 });

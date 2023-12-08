@@ -1,42 +1,42 @@
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{~Grant ~Jefferson =no one}
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{~Grant ~Jefferson =no one}
 
-::Grant is <Answer> in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
+::Grant is  in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
 
-::Grant is buried in Grant's tomb.<Answer>::Grant is buried in Grant's tomb.{FALSE}
+::Grant is buried in Grant's tomb.::Grant is buried in Grant's tomb.{FALSE}
 
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{=no one =nobody}
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{=no one =nobody}
 
-::When was Ulysses S. Grant born?<Answer>::When was Ulysses S. Grant born?{#1822:1}
+::When was Ulysses S. Grant born?::When was Ulysses S. Grant born?{#1822:1}
 
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{~Grant ~Jefferson =no one }
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{~Grant ~Jefferson =no one }
 
-::Grant is <Answer> in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
+::Grant is  in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
 
-::The American holiday of Thanksgiving is celebrated on the <Answer> Thursday of November.::The American holiday of Thanksgiving is celebrated on the <Answer> Thursday of November.{ ~second ~third =fourth }
+::The American holiday of Thanksgiving is celebrated on the  Thursday of November.::The American holiday of Thanksgiving is celebrated on the <Answer> Thursday of November.{ ~second ~third =fourth }
 
-::Japanese characters originally came from what country? <Answer>::Japanese characters originally came from what country? { ~India =China ~Korea ~Egypt}
+::Japanese characters originally came from what country? ::Japanese characters originally came from what country? { ~India =China ~Korea ~Egypt}
 
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{=no one =nobody}
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{=no one =nobody}
 
-::Two plus two equals <Answer>.::Two plus two equals {=four =4}
+::Two plus two equals .::Two plus two equals {=four =4}
 
-::Grant is buried in Grant's tomb.<Answer>::Grant is buried in Grant's tomb.{F}
+::Grant is buried in Grant's tomb.::Grant is buried in Grant's tomb.{F}
 
-::The sun rises in the east.<Answer>::The sun rises in the east.{T}
+::The sun rises in the east.::The sun rises in the east.{T}
 
-::Matching Question. <Answer>::Matching Question. { =subquestion1 -> subanswer1 =subquestion2 -> subanswer2 =subquestion3 -> subanswer3 }
+::Matching Question. ::Matching Question. { =subquestion1 -> subanswer1 =subquestion2 -> subanswer2 =subquestion3 -> subanswer3 }
 
-::Match the following countries with their corresponding capitals. <Answer>::Match the following countries with their corresponding capitals. { =Canada -> Ottawa =Italy -> Rome =Japan -> Tokyo =India -> New Delhi#J'ai une rétroaction }
+::Match the following countries with their corresponding capitals. ::Match the following countries with their corresponding capitals. { =Canada -> Ottawa =Italy -> Rome =Japan -> Tokyo =India -> New Delhi#J'ai une rétroaction }
 
-::When was Ulysses S. Grant born? <Answer>::When was Ulysses S. Grant born? {#1822}
+::When was Ulysses S. Grant born? ::When was Ulysses S. Grant born? {#1822}
 
-::What is the value of pi (to 3 decimal places)? <Answer>.::What is the value of pi (to 3 decimal places)? {#3.1415:0.0005}
+::What is the value of pi (to 3 decimal places)? .::What is the value of pi (to 3 decimal places)? {#3.1415:0.0005}
 
-::What is the value of pi (to 3 decimal places)? <Answer>.::What is the value of pi (to 3 decimal places)? {#3.141..3.142}
+::What is the value of pi (to 3 decimal places)? .::What is the value of pi (to 3 decimal places)? {#3.141..3.142}
 
-::When was Ulysses S. Grant born? <Answer>::When was Ulysses S. Grant born? {# =1822:0 =%50%1822:2}
+::When was Ulysses S. Grant born? ::When was Ulysses S. Grant born? {# =1822:0 =%50%1822:2}
 
-::What's 2 plus 2? <Answer>::What's 2 plus 2? {#4}
+::What's 2 plus 2? ::What's 2 plus 2? {#4}
 
 ::Kanji Origins::Japanese characters originally
 came from what country? {=China}
@@ -44,40 +44,40 @@ came from what country? {=China}
 ::Thanksgiving Date::The American holiday of Thanksgiving is
 celebrated on the <Answer> Thursday of November.{~second ~third =fourth}
 
-::What's the answer to this multiple-choice question?<Answer>::What's the answer to this multiple-choice question?{ ~wrong answer#feedback comment on the wrong answer ~another wrong answer#feedback comment on this wrong answer =right answer#Very good!}
+::What's the answer to this multiple-choice question?::What's the answer to this multiple-choice question?{ ~wrong answer#feedback comment on the wrong answer ~another wrong answer#feedback comment on this wrong answer =right answer#Very good!}
 
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{ =no one#excellent answer! =nobody#excellent answer!}
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{ =no one#excellent answer! =nobody#excellent answer!}
 
-::Grant is buried in Grant's tomb.<Answer>::Grant is buried in Grant's tomb.{FALSE#No one is buried in Grant's tomb.}
+::Grant is buried in Grant's tomb.::Grant is buried in Grant's tomb.{FALSE#No one is buried in Grant's tomb.}
 
-::Difficult question.<Answer>::Difficult question.{~wrong answer ~%50%half credit answer =full credit answer}
+::Difficult question.::Difficult question.{~wrong answer ~%50%half credit answer =full credit answer}
 
 ::Jesus' hometown::Jesus Christ was from { ~Jerusalem#This was an important city, but the wrong answer. ~%25%Bethlehem#He was born here, but not raised here. ~%50%Galilee#You need to be more specific. =Nazareth#Yes! That's right!}
 
 ::Jesus' hometown::Jesus Christ was from { =Nazareth#Yes! That's right! =%75%Nazereth#Right, but misspelled. =%25%Bethlehem#He was born here, but not raised here.}
 
-::What two people are entombed in Grant's tomb? <Answer>::What two people are entombed in Grant's tomb? { ~No one ~%50%Grant ~%50%Grant's wife ~Grant's father }
+::What two people are entombed in Grant's tomb? ::What two people are entombed in Grant's tomb? { ~No one ~%50%Grant ~%50%Grant's wife ~Grant's father }
 
-::What two people are entombed in Grant's tomb? <Answer>::What two people are entombed in Grant's tomb? { ~%-50%No one ~%50%Grant ~%50%Grant's wife ~%-50%Grant's father }
+::What two people are entombed in Grant's tomb? ::What two people are entombed in Grant's tomb? { ~%-50%No one ~%50%Grant ~%50%Grant's wife ~%-50%Grant's father }
 
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{~Grant ~Jefferson =no one}
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{~Grant ~Jefferson =no one}
 
-::Grant is <Answer> in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
+::Grant is  in Grant's tomb.::Grant is <Answer> in Grant's tomb.{~buried =entombed ~living}
 
-::Grant is buried in Grant's tomb.<Answer>::Grant is buried in Grant's tomb.{FALSE}
+::Grant is buried in Grant's tomb.::Grant is buried in Grant's tomb.{FALSE}
 
-::Who's buried in Grant's tomb?<Answer>::Who's buried in Grant's tomb?{=no one =nobody}
+::Who's buried in Grant's tomb?::Who's buried in Grant's tomb?{=no one =nobody}
 
-::When was Ulysses S. Grant born?<Answer>::When was Ulysses S. Grant born?{#1822:5}
+::When was Ulysses S. Grant born?::When was Ulysses S. Grant born?{#1822:5}
 
 ::Match the following countries with their corresponding::Match the following countries with their corresponding
 capitals.{=Canada->Ottawa =Italy->Rome =Japan->Tokyo}
 
 ::Grant's Tomb::Grant is <Answer> in Grant's tomb.{ ~buried#No one is buried there. =entombed#Right answer! ~living#We hope not! }
 
-::Difficult multiple choice question.<Answer>::Difficult multiple choice question.{ ~wrong answer #comment on wrong answer ~%50%half credit answer #comment on answer =full credit answer #well done!}
+::Difficult multiple choice question.::Difficult multiple choice question.{ ~wrong answer #comment on wrong answer ~%50%half credit answer #comment on answer =full credit answer #well done!}
 
 ::Jesus' hometown (Short answer ex.)::Jesus Christ was from { =Nazareth#Yes! That's right! =%75%Nazereth#Right, but misspelled. =%25%Bethlehem#He was born here, but not raised here. }
 
-::Numerical example::When was Ulysses S. Grant born? {# =1822:0 #Correct! 100% credit =%50%1822:2 #He was born in 1822. You get 50% credit for being close. =%25%1820..1890#Blablabla }
+::Numerical example::When was Ulysses S. Grant born? {# =1822:0 #Correct! 100% credit =%50%1822:2 #He was born in 1822. You get 50% credit for being close. =%25%1844..1890#Blablabla }
 
