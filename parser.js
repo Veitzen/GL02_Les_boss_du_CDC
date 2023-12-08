@@ -112,7 +112,7 @@ class Parser {
                     return text;
                 } else 
                 answers.map(answer => {
-                    text = text.replace(answer, "");
+                    text = text.replace(answer, "<Answer>");
                 });
                 return text;
             }
@@ -149,7 +149,7 @@ class Parser {
             answers.map(answer => {
                 text = text.replace(answer, "<Answer>");
             });
-            return text;
+            return text.trim();
         }
     }
 
@@ -174,7 +174,7 @@ class Parser {
 }
 
 let fs = require('fs');
-fs.readFile('questions_data/Autre/GIFT-examples.gift', 'utf8', function (err, data) {
+fs.readFile('export.gift', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
@@ -184,6 +184,8 @@ fs.readFile('questions_data/Autre/GIFT-examples.gift', 'utf8', function (err, da
         console.log("The .gift file contains error");
     }
     parser.parse(data);
+    console.log(parser.parsedQuestions);
     let qcm = new QCM(parser.parsedQuestions);
-    qcm.afficherQuestion();
+    // qcm.exporterFichier();
+    qcm.passerTest();
 });

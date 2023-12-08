@@ -1,3 +1,5 @@
+const readlineSync = require('readline-sync'); // Importer le module readlinesync
+
 // Déclaration de classes qu'on utilise dans le projet (les 2 types d'objets qu'on manipule)
 
 // Définir la classe Question à partir de "Sémantique des données"
@@ -59,10 +61,10 @@ class Question {
                             default:
                                 break;
                         }
-                        this.goodAnswers = { answer: answer, retroaction: retroactionGoodAnswer, retroactionBadAnswer: retroactionBadAnswer };
+                        this.goodAnswers = { answer: answer, retroaction: this.specialSymbolsRevert(retroactionGoodAnswer), retroactionBadAnswer: this.specialSymbolsRevert(retroactionBadAnswer) };
                     } else {
                         let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
-                        this.goodAnswers = { answer: answer, retroaction: retroaction };
+                        this.goodAnswers = { answer: answer, retroaction: this.specialSymbolsRevert(retroaction) };
                     }
                 } else {
                     this.goodAnswers = { answer: answer };
@@ -76,9 +78,9 @@ class Question {
                     if (goodAnswerArray[0].slice(2).includes("#")) {
                         let answer = goodAnswerArray[0].split("#")[0].trim();
                         let retroaction = goodAnswerArray[0].split("#")[1].trim();
-                        this.goodAnswers = { answer: answer, retroaction: retroaction };
+                        this.goodAnswers = { answer: this.specialSymbolsRevert(answer), retroaction: this.specialSymbolsRevert(retroaction) };
                     } else {
-                        this.goodAnswers = { answer: goodAnswerArray[0].trim() };
+                        this.goodAnswers = { answer: this.specialSymbolsRevert(goodAnswerArray[0].trim()) };
                     }
                 }
                 // Cas où il y a plusieurs bonnes réponses
@@ -88,10 +90,10 @@ class Question {
                         if (answer.includes("#")) {
                             let answer = goodAnswerArray[0].split("#")[0].trim();
                             let retroaction = goodAnswerArray[0].split("#")[1].trim();
-                            this.goodAnswers.push({ answer: answer, retroaction: retroaction });
+                            this.goodAnswers.push({ answer: this.specialSymbolsRevert(answer), retroaction: this.specialSymbolsRevert(retroaction) });
                         } else {
                             answer = answer.trim();
-                            this.goodAnswers.push({ answer: answer });
+                            this.goodAnswers.push({ answer: this.specialSymbolsRevert(answer) });
                         }
                     });
                 }
@@ -105,9 +107,9 @@ class Question {
                         let question = seperateArray[0].trim().replace("=", "");
                         let retroaction = seperateArray[1].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
                         let expectedMatch = seperateArray[1].replace(/\#[^(\~|\}|\=)]{1,}/gm, "").trim();
-                        this.goodAnswers.push({ question: question, expectedMatch: expectedMatch, retroaction: retroaction });
+                        this.goodAnswers.push({ question: this.specialSymbolsRevert(question), expectedMatch: this.specialSymbolsRevert(expectedMatch), retroaction: this.specialSymbolsRevert(retroaction) });
                     } else {
-                        this.goodAnswers.push({ question: answer.split("->")[0].trim(), expectedMatch : answer.split("->")[1].trim() });
+                        this.goodAnswers.push({ question: this.specialSymbolsRevert(answer.split("->")[0].trim()), expectedMatch: this.specialSymbolsRevert(answer.split("->")[1].trim()) });
                     }
                 });
                 break;
@@ -123,10 +125,10 @@ class Question {
                         if (answerString.includes("#")) {
                             answerString = answerString.split("#")[0].trim();
                             let retroaction = answer.replace(/\%(-|)\d*\%/gm, "").match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
-                            let answerObject = { answer: answerString, weight: weight, retroaction: retroaction };
+                            let answerObject = { answer: this.specialSymbolsRevert(answerString), weight: weight, retroaction: this.specialSymbolsRevert(retroaction) };
                             this.goodAnswers.push(answerObject);
                         } else {
-                            let answerObject = { answer: answerString, weight: weight };
+                            let answerObject = { answer: this.specialSymbolsRevert(answerString), weight: weight };
                             this.goodAnswers.push(answerObject);
                         }
                     });
@@ -137,11 +139,11 @@ class Question {
                             if (answer.includes("#")) {
                                 let answerString = answer.replace(/\=[^(\#|\~|\})]{1,}/gm, "").trim();
                                 let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
-                                let answerObject = { answer: answerString, weight: 1, retroaction: retroaction };
+                                let answerObject = { answer: this.specialSymbolsRevert(answerString), weight: 1, retroaction: this.specialSymbolsRevert(retroaction) };
                                 this.goodAnswers.push(answerObject);
                             } else {
                                 let answerString = answer.replace("=", "").trim();
-                                let answerObject = { answer: answerString, weight: 1 };
+                                let answerObject = { answer: this.specialSymbolsRevert(answerString), weight: 1 };
                                 this.goodAnswers.push(answerObject);
                             }
                         });
@@ -153,11 +155,11 @@ class Question {
                             if (answer.includes("#")) {
                                 let answerString = answer.replace(/\~[^(\#|\~|\})]{1,}/gm, "").trim();
                                 let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
-                                let answerObject = { answer: answerString, weight: 0, retroaction: retroaction };
+                                let answerObject = { answer: this.specialSymbolsRevert(answerString), weight: 0, retroaction: this.specialSymbolsRevert(retroaction) };
                                 this.goodAnswers.push(answerObject);
                             } else {
                                 let answerString = answer.replace("~", "").trim();
-                                let answerObject = { answer: answerString, weight: 0 };
+                                let answerObject = { answer: this.specialSymbolsRevert(answerString), weight: 0 };
                                 this.goodAnswers.push(answerObject);
                             }
                         });
@@ -167,11 +169,11 @@ class Question {
                     if (this.answerString[0].includes("#")) {
                         let answer = this.answerString[0].match(/\=[^(\~|\})]{1,}/gm)[0].replace("=", "").trim();
                         let retroaction = this.answerString[0].match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
-                        let answerObject = { answer: answer, retroaction: retroaction };
+                        let answerObject = { answer: this.specialSymbolsRevert(answer), retroaction: this.specialSymbolsRevert(retroaction) };
                         this.goodAnswers = answerObject;
                     }
                     let answer = this.answerString[0].match(/\=[^(\#|\~|\})]{1,}/gm)[0].replace("=", "").trim();
-                    this.goodAnswers = { answer: answer };
+                    this.goodAnswers = { answer: this.specialSymbolsRevert(answer) };
                 }
                 break;
             case "ReponseNumerique":
@@ -279,21 +281,21 @@ class Question {
                     this.goodAnswers = { answer: answer };
                 }
                 break;
-                case "MotManquant":
-                    this.goodAnswers = [];
-                    this.answerString.map(answer => {
-                        // Si il y a une rétroaction
-                        if (answer.includes("#")) {
-                            let answerString = answer.match(/\=[^(\~|\}|\#)]{1,}/gm, "")[0].replace("=", "").trim();
-                            let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
-                            let answerObject = { answer: answerString, retroaction: retroaction };
-                            this.goodAnswers.push(answerObject);
-                        } else {
-                            let answerString = answer.match(/\=[^(\~|\}|\#)]{1,}/gm, "")[0].replace("=", "").trim();
-                            let answerObject = { answer: answerString };
-                            this.goodAnswers.push(answerObject);
-                        }
-                    });
+            case "MotManquant":
+                this.goodAnswers = [];
+                this.answerString.map(answer => {
+                    // Si il y a une rétroaction
+                    if (answer.includes("#")) {
+                        let answerString = answer.match(/\=[^(\~|\}|\#)]{1,}/gm, "")[0].replace("=", "").trim();
+                        let retroaction = answer.match(/\#[^(\~|\}|\=)]{1,}/gm)[0].replace("#", "").trim();
+                        let answerObject = { answer: this.specialSymbolsRevert(answerString), retroaction: this.specialSymbolsRevert(retroaction) };
+                        this.goodAnswers.push(answerObject);
+                    } else {
+                        let answerString = answer.match(/\=[^(\~|\}|\#)]{1,}/gm, "")[0].replace("=", "").trim();
+                        let answerObject = { answer: this.specialSymbolsRevert(answerString) };
+                        this.goodAnswers.push(answerObject);
+                    }
+                });
             default:
                 break;
         }
@@ -310,15 +312,15 @@ class Question {
                 otherAnswers = this.answerString[0].match(/(\~|\=)[^(\~|\=|\}|\#)]{1,}/gm);
                 otherAnswers.map(answer => {
                     answer = answer.replace(/\%(-|)\d*\%/g, "").replace(/\#[^(\~|\}|\=)]{1,}/gm, "");
-                    this.possibleAnswers.push(answer.replace("~", "").replace("=", "").trim());
+                    this.possibleAnswers.push(this.specialSymbolsRevert(answer.replace("~", "").replace("=", "").trim()));
                 });
                 break;
             case "Appariement":
                 this.possibleAnswers = [];
                 this.goodAnswers.map(answer => {
-                    this.possibleAnswers.push(answer.expectedMatch);
+                    this.possibleAnswers.push(this.specialSymbolsRevert(answer.expectedMatch));
                 });
-                break;    
+                break;
         }
     }
 
@@ -326,6 +328,8 @@ class Question {
         for (let i = 0; i < this.answerString.length; i++) {
             if (this.answerString[i].includes("SYMBOL6") == true) {
                 this.feedback = this.specialSymbolsRevert(this.answerString[i].split("SYMBOL6")[1].replace("}", "").trim());
+                let string = "SYMBOL6" + this.feedback;
+                this.answerString[0] = this.answerString[0].replace(string, "");
             }
         }
     }
@@ -342,6 +346,8 @@ class Question {
         this.typeOfQuestion = this.typeofQuestion();
         this.feedback();
         this.goodAnswer();
+        console.log(this.title);
+        this.specialSymbolsRevert(this.answerString[0])
         this.findPossibleAnswers();
         this.specialSymbolsRevert(this.text);
     }
@@ -356,15 +362,156 @@ class QCM {
         this.questions = questions;
     }
 
-    afficherQuestion(){
-        this.questions.map((question, index) => {
-            let stringToDisplay = "----- Question n°" + (index+1) + " : " + question.title + "------";
-            stringToDisplay+= "\nFormat : " + question.format;
-            stringToDisplay+= "\nType de question : " + question.typeOfQuestion;
-            stringToDisplay+= "\nTexte : " + question.text;
-            question.possibleAnswers != undefined ? stringToDisplay+= "\nRéponses possibles : " + question.possibleAnswers : "";
-            console.log(stringToDisplay);
+    afficherQuestion(question) {
+        let stringToDisplay = "----- Question : " + question.title + "------";
+        stringToDisplay += "\nType de question : " + question.typeOfQuestion;
+        stringToDisplay += "\nTexte : " + question.text;
+        question.possibleAnswers != undefined ? stringToDisplay += "\nRéponses possibles : " + question.possibleAnswers : "";
+        console.log(stringToDisplay);
+    }
+
+    afficherToutesQuestions() {
+        this.questions.map((question) => {
+            this.afficherQuestion(question);
         })
+    }
+
+    verifierQualite() {
+        if (this.questions.length < 15) {
+            console.log("Le QCM ne contient pas assez de questions (" + this.questions.length + " trouvées)");
+            return false;
+        } else if (this.questions.length > 20) {
+            console.log("Le QCM contient trop de questions (" + this.questions.length + " trouvées)");
+            return false;
+        } else {
+            this.questions.map((question) => {
+                for (let i = 0; i < question.answerString.length; i++) {
+                    if (question.titre == this.questions[i].titre) {
+                        console.log("Le QCM contient 2 fois la même question (" + question.title + ")");
+                        return false;
+                    }
+                }
+            });
+        }
+        return true;
+    }
+
+    exporterFichier() {
+        let fs = require('fs');
+        let stringToWrite = "";
+        this.questions.map((question) => {
+            stringToWrite += "::" + question.title + "::";
+            question.format != "moodle" ? stringToWrite += "[" + question.format + "]" : "";
+            if (question.answerString.length > 1) {
+                // Cas où c'est un texte à trous
+                let texte = question.text.split("<Answer>");
+                for (let i = 0; i < question.answerString.length; i++) {
+                    stringToWrite += texte[i] + " " + answerString[i] + " ";
+                }
+                stringToWrite += texte[question.answerString.length] + "\n";
+            } else {
+                stringToWrite += question.text.replace(/<Answer>(.|)$/gm, "");
+                stringToWrite += question.answerString[0] + "\n";
+            }
+            stringToWrite += "\n";
+        });
+        fs.writeFile("export.gift", stringToWrite, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+            console.log("The file was saved!");
+        });
+    }
+
+    passerTest() {
+        let nbBonneRep = 0;
+        let erreur = 0;
+        let answer;
+        this.questions.map((question) => {
+            this.afficherQuestion(question);
+            switch (question.typeOfQuestion) {
+                case "VraiFaux":
+                    answer = readlineSync.question("Vrai ou Faux (T/F) :");
+                    if (answer == question.goodAnswers.answer) {
+                        if (question.hasOwnProperty("retroactionGoodAnswer")) {
+                            console.log("Bonne réponse : " + question.retroactionBadAnswer);
+                        } else if (question.hasOwnProperty("retroaction")) {
+                            console.log("Bonne réponse : " + question.retroaction);
+                        }
+                        else {
+                            console.log("Bonne réponse!");
+                        }
+                        nbBonneRep++;
+                    } else {
+                        if (question.hasOwnProperty("retroactionBadAnswer")) {
+                            console.log("Bonne réponse : " + question.retroactionBadAnswer);
+                        } else {
+                            console.log("Bonne réponse!");
+                        }
+                        erreur++;
+                    }
+                    break;
+                case "Appariement":
+                    question.goodAnswers.map(appariement => {
+                        let question = appariement.question;
+                        let expectedMatch = appariement.expectedMatch;
+                        let answer = readlineSync.question(question + " : ");
+                        if (answer == expectedMatch) {
+                            if (appariement.hasOwnProperty("retroaction")) {
+                                console.log("Bonne réponse : " + appariement.retroaction);
+                            }
+                            else {
+                                console.log("Bonne réponse!");
+                            }
+                            nbBonneRep++;
+                        } else {
+                            console.log("Mauvaise réponse");
+                            erreur++;
+                        }
+                    });
+                    break;
+                case "MotManquant":
+                    question.goodAnswers.map(answer => {
+                        let expectedAnswer = answer.answer;
+                        answer = readlineSync.question("Réponse : ");
+                        if (answer == expectedAnswer) {
+                            if (answer.hasOwnProperty("retroaction")) {
+                                console.log("Bonne réponse : " + answer.retroaction);
+                            }
+                            else {
+                                console.log("Bonne réponse!");
+                            }
+                            nbBonneRep++;
+                        } else {
+                            console.log("Mauvaise réponse");
+                            erreur++;
+                        }
+                    });
+                    break;
+                case "Composition":
+                    console.log("Il n'y a pas de bonne réponse pour ce type de question, elle doit être vérifiée manuellement");
+                    break;
+                default:
+                    console.log(question.goodAnswers.answer)
+                    answer = readlineSync.question("Entrer une réponse :");
+                    if (answer == question.goodAnswers.answer) {
+                        if (answer == question.answer) {
+                            if (question.hasOwnProperty("retroaction")) {
+                                console.log("Bonne réponse : " + question.retroaction);
+                            }
+                            else {
+                                console.log("Bonne réponse!");
+                            }
+                            nbBonneRep++;
+                        } else {
+                            console.log("Mauvaise réponse");
+                            erreur++;
+                        }
+                    }
+                    break;
+                }
+            });
+        console.log("Nombre de bonnes réponses : " + nbBonneRep + "/" + (nbBonneRep + erreur));
     }
 }
 
