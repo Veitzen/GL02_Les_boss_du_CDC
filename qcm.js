@@ -495,22 +495,20 @@ class QCM {
                     console.log(question.goodAnswers.answer)
                     answer = readlineSync.question("Entrer une réponse :");
                     if (answer == question.goodAnswers.answer) {
-                        if (answer == question.answer) {
-                            if (question.hasOwnProperty("retroaction")) {
-                                console.log("Bonne réponse : " + question.retroaction);
-                            }
-                            else {
-                                console.log("Bonne réponse!");
-                            }
-                            nbBonneRep++;
-                        } else {
-                            console.log("Mauvaise réponse");
-                            erreur++;
+                        if (question.hasOwnProperty("retroaction")) {
+                            console.log("Bonne réponse : " + question.retroaction);
                         }
+                        else {
+                            console.log("Bonne réponse!");
+                        }
+                        nbBonneRep++;
+                    } else {
+                        console.log("Mauvaise réponse");
+                        erreur++;
                     }
                     break;
-                }
-            });
+            }
+        });
         console.log("Nombre de bonnes réponses : " + nbBonneRep + "/" + (nbBonneRep + erreur));
     }
 }
